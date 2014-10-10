@@ -28,7 +28,7 @@ document.body.addEventListener("keydown", function() {
      texture.minFilter = THREE.LinearMipMapLinearFilter;
      var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshLambertMaterial({ map: texture, ambient: 0xbbbbbb }));
      plane.overdraw=true;
-     plane.rotation.x = -Math.PI/4;
+     plane.rotation.x = -Math.PI/2;
      scene.add(plane);
 
      //A js model exported from blender

@@ -25,6 +25,17 @@
      plane.rotation.x = -Math.PI/4;
      scene.add(plane);
 
+     //A js model exported from blender
+     var loader = new THREE.JSONLoader();
+     loader.load( "blender/monkey.js", function( geometry ) {
+
+       mesh = new THREE.Mesh( geometry, new THREE.MeshNormalMaterial() );
+       mesh.scale.set( 10, 10, 10 );
+       mesh.position.y = 0;
+       mesh.position.x = 0;
+       scene.add( mesh );
+     } );
+     
      //Some light
      var ambientLight = new THREE.AmbientLight(0xbbbbbb);
      scene.add(ambientLight);

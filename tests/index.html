@@ -5,7 +5,13 @@
   </head>
   <body>
     <script src="lib/three.min.js"></script>
+    <script src="lib/PointerLockControls.js"></script>
+    <script src="lib/THREEx.FullScreen.js"></script>
     <script>
+document.body.addEventListener("keydown", function() {
+  THREEx.FullScreen.request();
+     }, false);
+     var clock = new THREE.Clock();
      //Scene, camera renderer
      var scene = new THREE.Scene();
      var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
@@ -39,11 +45,24 @@
      //Some light
      var ambientLight = new THREE.AmbientLight(0xbbbbbb);
      scene.add(ambientLight);
-    
+
+     //Camera control
+     var camControls = new THREE.PointerLockControls(camera);
+     scene.add(camControls.getObject());
+     
      var render = function () {
        requestAnimationFrame(render);
+       camControls.enabled=true;
+       camControls.isOnObject( false );
+       camControls.update();
+
        renderer.render(scene, camera);
      };
+
+     function animate()
+     {
+       
+     }
      render();
     </script>
   </body>

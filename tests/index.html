@@ -8,6 +8,7 @@
     <script src="lib/PointerLockControls.js"></script>
     <script src="lib/THREEx.FullScreen.js"></script>
     <script>
+
 			// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
 			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
@@ -20,12 +21,19 @@
 
 					if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
 
-						controls.enabled = true;
+						camControls.enabled = true;
 
 					} else {
 
-						controls.enabled = false;
+						camControls.enabled = false;
+
 					}
+
+				}
+
+				var pointerlockerror = function ( event ) {
+
+					instructions.style.display = '';
 
 				}
 

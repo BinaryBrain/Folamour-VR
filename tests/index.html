@@ -7,20 +7,7 @@
     <script src="lib/three.min.js"></script>
     <script src="lib/PointerLockControls.js"></script>
     <script src="lib/THREEx.FullScreen.js"></script>
-    	<div id="blocker">
-
-			<div id="instructions">
-				<span style="font-size:40px">Click to play</span>
-				<br />
-				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
-			</div>
-
-		</div>
     <script>
-
-   	   var blocker = document.getElementById( 'blocker' );
-			var instructions = document.getElementById( 'instructions' );
-
 			// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
 			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
@@ -35,25 +22,10 @@
 
 						controls.enabled = true;
 
-						blocker.style.display = 'none';
-
 					} else {
 
 						controls.enabled = false;
-
-						blocker.style.display = '-webkit-box';
-						blocker.style.display = '-moz-box';
-						blocker.style.display = 'box';
-
-						instructions.style.display = '';
-
 					}
-
-				}
-
-				var pointerlockerror = function ( event ) {
-
-					instructions.style.display = '';
 
 				}
 
@@ -66,10 +38,7 @@
 				document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
 				document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
 
-				instructions.addEventListener( 'click', function ( event ) {
-
-					instructions.style.display = 'none';
-
+				document.body.addEventListener( 'click', function ( event ) {
 					// Ask the browser to lock the pointer
 					element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
 
@@ -101,10 +70,6 @@
 					}
 
 				}, false );
-
-			} else {
-
-				instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
 
 			}
 

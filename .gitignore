@@ -3,3 +3,4 @@
 *.blend3
 **/.DS_Store
 server/*_desc.txt
+*Thumbs.db

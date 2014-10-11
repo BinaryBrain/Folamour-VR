@@ -51,14 +51,14 @@ function setSpeed(cameraHitbox,pressed,theta) {
 
     if (pressed.jump) {
         if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
-            speed[1]+=20;
+            speed[1]+=100;
         }
     }
     
     var norm = normalizePlane(speed);
     cameraHitbox.setLinearVelocity(new THREE.Vector3(
-        10*speed[0]/norm,
+        100*speed[0]/norm,
         speed[1] + cameraHitbox.getLinearVelocity().y,
-        10*speed[2]/norm
+        100*speed[2]/norm
     ));
 }

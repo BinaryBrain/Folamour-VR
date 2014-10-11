@@ -18,7 +18,6 @@ var audioElement2 = null;
 window.addEventListener("load", function(){
   audioElement = document.querySelector("#audio");
   audioElement2 = document.querySelector("#audio2");
-  init()
 })
 
 function init() {

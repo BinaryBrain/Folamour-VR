@@ -17,7 +17,7 @@ window.addEventListener("load", function(){
 })
 
 function init(mod) {
-  modifier = mod
+  modifier = mod;
   pc = new RTCPeerConnection(null, null);
   
   $.get("god"+modifier+"_b.php?foo=wait");

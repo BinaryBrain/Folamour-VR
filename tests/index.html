@@ -100,8 +100,15 @@
 				mesh.position.y = 0;
 				mesh.position.x = 0;
 				scene.add(mesh);
-				console.log(mesh)
 			});
+
+			loadMissile(function (missile) {
+				missile.scale.set(10, 10, 10);
+				missile.position.y = 40;
+				missile.position.x = 0;
+				missile.position.z = -50;
+				scene.add(missile);
+			})
 
 			//A plane, with tiling texture
 			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');

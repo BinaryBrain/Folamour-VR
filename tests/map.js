@@ -27,8 +27,28 @@ function loadSkybox(cb) {
 			})
 		);
 
-		mesh.frustumCulled = false;
+		if(cb) {
+			cb(mesh);
+		}
+	});
+}
 
+function loadEntity(model, texture, cb) {
+	loader.load(modelPath+model, function (geometry) {
+		var mesh = new Physijs.ConcaveMesh(
+			geometry,
+			new THREE.MeshLambertMaterial({
+				map: THREE.ImageUtils.loadTexture(texturePath+texture),
+				ambient: 0xffffff
+			})
+		);
+
+		cb(mesh);
+	});
+}
+
+function loadMissile(cb) {
+	loadEntity('missile.js', 'missile.jpg', function (mesh) {
 		if(cb) {
 			cb(mesh);
 		}

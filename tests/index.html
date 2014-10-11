@@ -10,6 +10,7 @@
   </head>
   <body>
     <script src="lib/three.min.js"></script>
+    <script src="lib/OculusRiftEffect.js"></script>
     <script src="lib/PointerLockControls.js"></script>
     <script src="lib/THREEx.FullScreen.js"></script>
     <script type="text/javascript" src="stats.js"></script>
@@ -135,7 +136,7 @@
        //Render function
        var render = function() {
          requestAnimationFrame(render);
-         setSpeed(cameraHitbox,pressed,theta);        
+         setSpeed(cameraHitbox,pressed,theta);
          renderer.render(scene, camera);
        };
        

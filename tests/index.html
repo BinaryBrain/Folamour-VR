@@ -1,233 +1,245 @@
 <html>
-  <head>
-    <title>HackZurich</title>
-    <style>
-     canvas {
-       width: 100%;
-       height: 100%
-     }
-    </style>
-  </head>
-  <body>
-    <script src="lib/three.min.js"></script>
-    <script src="lib/OculusRiftEffect.js"></script>
-    <script src="lib/PointerLockControls.js"></script>
-    <script src="lib/THREEx.FullScreen.js"></script>
-    <script type="text/javascript" src="stats.js"></script>
-    <script type="text/javascript" src="lib/physi.js"></script>
-    <script>
-     //Physijs scripts
-     Physijs.scripts.worker = 'physijs_worker.js';
-     Physijs.scripts.ammo = 'ammo.js';
-    </script>
-    <script type="text/javascript" src="lib/pointerLock.js"></script>
 
-    <script type="text/javascript" src="camera.js"></script>
-    <script type="text/javascript" src="createBox.js"></script>
-    
-    <script>
-     //Compatibility
-     if (navigator.mozGetUserMedia) var nav = "moz";
-     else nav = "webkit";
+<head>
+	<title>HackZurich</title>
+	<style>
+		canvas {
+			width: 100%;
+			height: 100%
+		}
+	</style>
+</head>
 
-     //Init scene
-     initScene = function() {
-       //Camera, renderer
-       var theta=0;
-       var phi=0;
-       var pressed={};
+<body>
+	<script src="lib/three.min.js"></script>
+	<script src="lib/OculusRiftEffect.js"></script>
+	<script src="lib/PointerLockControls.js"></script>
+	<script src="lib/THREEx.FullScreen.js"></script>
+	<script type="text/javascript" src="stats.js"></script>
+	<script type="text/javascript" src="lib/physi.js"></script>
+	<script>
+		//Physijs scripts
+		Physijs.scripts.worker = 'physijs_worker.js';
+		Physijs.scripts.ammo = 'ammo.js';
+	</script>
+	<script type="text/javascript" src="lib/pointerLock.js"></script>
 
-       //Setup renderer
-       var renderer = new THREE.WebGLRenderer({
-         antialias: true
-       });
-       renderer.setSize(window.innerWidth, window.innerHeight);
-       document.body.appendChild(renderer.domElement);
-       
-       //Compteur FPS
-       render_stats = new Stats();
-       render_stats.domElement.style.position = 'absolute';
-       render_stats.domElement.style.top = '0px';
-       render_stats.domElement.style.zIndex = 100;
-       document.body.appendChild(render_stats.domElement);
-       
-       physics_stats = new Stats();
-       physics_stats.domElement.style.position = 'absolute';
-       physics_stats.domElement.style.top = '50px';
-       physics_stats.domElement.style.zIndex = 100;
-       document.body.appendChild(physics_stats.domElement);
+	<script type="text/javascript" src="camera.js"></script>
+	<script type="text/javascript" src="createBox.js"></script>
 
-       //Physijs scene
-       var scene = new Physijs.Scene;
-       scene.setGravity(new THREE.Vector3( 0, -30, 0));
-       scene.addEventListener(
-         'update',
-         function() {
-           scene.simulate( undefined, 1 );
-           physics_stats.update();
-         }
-       );
+	<script>
+		//Compatibility
+		if (navigator.mozGetUserMedia) var nav = "moz";
+		else nav = "webkit";
 
-       //A plane, with tiling texture
-       /*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
-	  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-	  texture.repeat.set(5, 5);
-	  texture.magFilter = THREE.NearestFilter;
-	  texture.minFilter = THREE.LinearMipMapLinearFilter;
-	  var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
-          new THREE.MeshLambertMaterial({
-          map: texture,
-          ambient: 0xbbbbbb
-          }));
-	  plane.overdraw = true;
-	  plane.rotation.x = -Math.PI / 2;
-	  scene.add(plane);*/
-       
-       //Ground
-       ground_material = Physijs.createMaterial(
-         new THREE.MeshLambertMaterial({ 
-           map: THREE.ImageUtils.loadTexture( 'grass.jpg' ) 
-         }),
-		  .8, // high friction
-		  .9
-       );
-       ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
-       ground_material.map.repeat.set( 4, 4 );
-       ground = new Physijs.BoxMesh(
-         new THREE.CubeGeometry(100, 1, 100),
-         ground_material,
-         0 // mass
-       );
-       scene.add(ground);
+		//Init scene
+		initScene = function() {
+			//Camera, renderer
+			var theta = 0;
+			var phi = 0;
+			var pressed = {};
 
-       //Wall
-       wall = new Physijs.BoxMesh(
-         new THREE.CubeGeometry(1, 20, 100),
-         ground_material,
-         0 // mass
-       );
-       wall.position.set(50,10,0);
-       scene.add(wall);
+			//Setup renderer
+			var renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setSize(window.innerWidth, window.innerHeight);
 
-       //Blender model exporter as a js object
-       var loader = new THREE.JSONLoader();
-       loader.load("blender/monkey.js", function(geometry) {
-         mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
-         mesh.scale.set(10, 10, 10);
-         mesh.position.y = 0;
-         mesh.position.x = 0;
-         scene.add(mesh);
-       });
+			// Here is the effect for the Oculus Rift
+			// worldScale 100 means that 100 Units == 1m
+			effect = new THREE.OculusRiftEffect(renderer, {
+				worldScale: 100
+			});
+			effect.setSize(window.innerWidth, window.innerHeight);
 
-       //Some light
-       var ambientLight = new THREE.AmbientLight(0xbbbbbb);
-       scene.add(ambientLight);
+			document.body.appendChild(renderer.domElement);
 
-       //Camera
-       var ret=initCamera(scene);
-       var camera=ret.camera;
-       var cameraHitbox=ret.cameraHitbox;
-       
-       camera.lookAt(new THREE.Vector3(
-         100*Math.sin(theta),
-         100*Math.tan(phi),
-         100*Math.cos(theta)));
-    
-       //Render function
-       var render = function() {
-         requestAnimationFrame(render);
-         setSpeed(cameraHitbox,pressed,theta);
-         renderer.render(scene, camera);
-       };
-       
-       createBox(scene);
-       scene.simulate();
-       render();
+			//Compteur FPS
+			render_stats = new Stats();
+			render_stats.domElement.style.position = 'absolute';
+			render_stats.domElement.style.top = '0px';
+			render_stats.domElement.style.zIndex = 100;
+			document.body.appendChild(render_stats.domElement);
 
-       //Mouse movements
-       function onDocumentMouseMove( event ) {
-         oldX = event.clientX;
-         oldY = event.clientY;
-	 //Angles
-         theta -= event[nav+'MovementX']/window.innerWidth*10;
-         phi -= event[nav+'MovementY']/window.innerWidth*10;
-         phi = Math.min( Math.PI/2, Math.max( -Math.PI/2, phi ) );
-	 //Orient camera
-         camera.lookAt(new THREE.Vector3(
-           cameraHitbox.position.x + 10000*Math.sin(theta),
-           cameraHitbox.position.y + 10000*Math.tan(phi),
-           cameraHitbox.position.z + 10000*Math.cos(theta)));
-         camera.updateMatrix();
-       }
-       //Keyboard management
-       function onKeydown (event) {
+			physics_stats = new Stats();
+			physics_stats.domElement.style.position = 'absolute';
+			physics_stats.domElement.style.top = '50px';
+			physics_stats.domElement.style.zIndex = 100;
+			document.body.appendChild(physics_stats.domElement);
 
-         switch(event.keyCode) {
-           case 87: //w
-             pressed.w = true;
-             break;
-           case 83: //s
-             pressed.s = true;
-             break;
-           case 65: //a
-             pressed.a = true;
-             break;
-           case 68: //d
-             pressed.d = true;
-             break;
-           case 32: //jump
-             pressed.jump = true;
-             break;
-         }
-         setSpeed(cameraHitbox,pressed,theta);
-       }
-       function onKeyup (event) {
-	 switch(event.keyCode) {
-           case 87: //w
-             pressed.w = false;
-             break;
-           case 83: //s
-             pressed.s = false;
-             break;
-           case 65: //a
-             pressed.a = false;
-             break;
-           case 68: //d
-             pressed.d = false;
-             break;
-           case 32: //jump
-             pressed.jump = false;
-             break;
-         }
-         setSpeed(cameraHitbox,pressed,theta);
-       }
+			//Physijs scene
+			var scene = new Physijs.Scene;
+			scene.setGravity(new THREE.Vector3(0, -30, 0));
+			scene.addEventListener(
+				'update',
+				function() {
+					scene.simulate(undefined, 1);
+					physics_stats.update();
+				}
+			);
 
-       //Binding listeners
-       document.addEventListener('mousemove', onDocumentMouseMove, false);
-       document.addEventListener('keydown', onKeydown, false);
-       document.addEventListener('keyup', onKeyup, false);
-       window.addEventListener('resize', onWindowResize, false);
-       
-       //Resize window
-       function onWindowResize() {
-         camera.aspect = window.innerWidth/window.innerHeight;
-         camera.updateProjectionMatrix();
-         renderer.setSize(window.innerWidth, window.innerHeight);
-       }
-     };
+			//A plane, with tiling texture
+			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
+	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set(5, 5);
+	texture.magFilter = THREE.NearestFilter;
+	texture.minFilter = THREE.LinearMipMapLinearFilter;
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
+		  new THREE.MeshLambertMaterial({
+		  map: texture,
+		  ambient: 0xbbbbbb
+		  }));
+	plane.overdraw = true;
+	plane.rotation.x = -Math.PI / 2;
+	scene.add(plane);*/
 
-     function animate() {
-     }
+			//Ground
+			ground_material = Physijs.createMaterial(
+				new THREE.MeshLambertMaterial({
+					map: THREE.ImageUtils.loadTexture('grass.jpg')
+				}),
+				.8, // high friction
+				.9
+			);
+			ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
+			ground_material.map.repeat.set(4, 4);
+			ground = new Physijs.BoxMesh(
+				new THREE.CubeGeometry(100, 1, 100),
+				ground_material,
+				0 // mass
+			);
+			scene.add(ground);
 
-     //Initialize scene
-     window.onload = initScene;
+			//Wall
+			wall = new Physijs.BoxMesh(
+				new THREE.CubeGeometry(1, 20, 100),
+				ground_material,
+				0 // mass
+			);
+			wall.position.set(50, 10, 0);
+			scene.add(wall);
 
-     //Helper functions
-     function normalizePlane (vec) {
-       normsq = vec[0]*vec[0]+vec[2]*vec[2];
-       return Math.sqrt(normsq);
-     }
-    </script>
-  </body>
+			//Blender model exporter as a js object
+			var loader = new THREE.JSONLoader();
+			loader.load("blender/monkey.js", function(geometry) {
+				mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+				mesh.scale.set(10, 10, 10);
+				mesh.position.y = 0;
+				mesh.position.x = 0;
+				scene.add(mesh);
+			});
+
+			//Some light
+			var ambientLight = new THREE.AmbientLight(0xbbbbbb);
+			scene.add(ambientLight);
+
+			//Camera
+			var ret = initCamera(scene);
+			var camera = ret.camera;
+			var cameraHitbox = ret.cameraHitbox;
+
+			camera.lookAt(new THREE.Vector3(
+				100 * Math.sin(theta),
+				100 * Math.tan(phi),
+				100 * Math.cos(theta)));
+
+			//Render function
+			var render = function() {
+				requestAnimationFrame(render);
+				setSpeed(cameraHitbox, pressed, theta);
+				renderer.render(scene, camera);
+			};
+
+			createBox(scene);
+			scene.simulate();
+			render();
+
+			//Mouse movements
+			function onDocumentMouseMove(event) {
+					oldX = event.clientX;
+					oldY = event.clientY;
+					//Angles
+					theta -= event[nav + 'MovementX'] / window.innerWidth * 10;
+					phi -= event[nav + 'MovementY'] / window.innerWidth * 10;
+					phi = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, phi));
+					//Orient camera
+					camera.lookAt(new THREE.Vector3(
+						cameraHitbox.position.x + 10000 * Math.sin(theta),
+						cameraHitbox.position.y + 10000 * Math.tan(phi),
+						cameraHitbox.position.z + 10000 * Math.cos(theta)));
+					camera.updateMatrix();
+				}
+				//Keyboard management
+			function onKeydown(event) {
+
+				switch (event.keyCode) {
+					case 87: //w
+						pressed.w = true;
+						break;
+					case 83: //s
+						pressed.s = true;
+						break;
+					case 65: //a
+						pressed.a = true;
+						break;
+					case 68: //d
+						pressed.d = true;
+						break;
+					case 32: //jump
+						pressed.jump = true;
+						break;
+				}
+				setSpeed(cameraHitbox, pressed, theta);
+			}
+
+			function onKeyup(event) {
+				switch (event.keyCode) {
+					case 87: //w
+						pressed.w = false;
+						break;
+					case 83: //s
+						pressed.s = false;
+						break;
+					case 65: //a
+						pressed.a = false;
+						break;
+					case 68: //d
+						pressed.d = false;
+						break;
+					case 32: //jump
+						pressed.jump = false;
+						break;
+				}
+				setSpeed(cameraHitbox, pressed, theta);
+			}
+
+			//Binding listeners
+			document.addEventListener('mousemove', onDocumentMouseMove, false);
+			document.addEventListener('keydown', onKeydown, false);
+			document.addEventListener('keyup', onKeyup, false);
+			window.addEventListener('resize', onWindowResize, false);
+
+			//Resize window
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				effect.setSize(window.innerWidth, window.innerHeight);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+		};
+
+		function animate() {}
+
+		//Initialize scene
+		window.onload = initScene;
+
+		//Helper functions
+		function normalizePlane(vec) {
+			normsq = vec[0] * vec[0] + vec[2] * vec[2];
+			return Math.sqrt(normsq);
+		}
+	</script>
+</body>
 
 </html>

@@ -287,22 +287,27 @@
       cameraHitbox = new Physijs.BoxMesh(
         new THREE.CylinderGeometry(4, 4, 12),
         ground_material,
-        50 // mass
+        50000 // mass
       );
 
-      cameraHitbox.position.set(0,7,0);
+      cameraHitbox.position.set(0,57,0);
       cameraHitbox.add(camera);
       scene.add( cameraHitbox );
       var i = 0;
       var render = function() {
         requestAnimationFrame(render);
+
+        //keeps the player vertical
+        cameraHitbox.rotation.z = 0;
+
         //camControls.enabled = true;
         //camControls.isOnObject(false);
         //camControls.update();
-        cameraHitbox.position.set(0,1,i/100);
+        //cameraHitbox.position.set(0,51,i/100);        
         i++;
         renderer.render(scene, camera);
       };
+
 
       spawnBox(scene);
       scene.simulate();
@@ -313,28 +318,71 @@
         oldY = event.clientY;
 
         theta -= event.webkitMovementX/window.innerWidth*100;
-        phi -= event.webkitMovementY/window.innerWidth*50;
+        phi -= event.webkitMovementY/window.innerWidth*100;
         phi = Math.min( Math.PI/2, Math.max( -Math.PI/2, phi ) );
 
         camera.lookAt(new THREE.Vector3(
-            cameraHitbox.position.x + 100*Math.sin(theta),
-            cameraHitbox.position.y + 100*Math.tan(phi),
-            cameraHitbox.position.z + 100*Math.cos(theta)));
+            cameraHitbox.position.x + 10000*Math.sin(theta),
+            cameraHitbox.position.y + 10000*Math.tan(phi),
+            cameraHitbox.position.z + 10000*Math.cos(theta)));
         camera.updateMatrix();
-        /*theta = - ( ( event.clientX - onMouseDownPosition.x ) * 0.5 )
-            + onMouseDownTheta;
-        phi = ( ( event.clientY - onMouseDownPosition.y ) * 0.5 )
-            + onMouseDownPhi;
-
-
-        camera.position.x = radious * Math.sin( theta * Math.PI / 360 )
-                            * Math.cos( phi * Math.PI / 360 );
-        camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
-        camera.position.z = radious * Math.cos( theta * Math.PI / 360 )
-                            * Math.cos( phi * Math.PI / 360 );
-        camera.updateMatrix();  */
       }
+
+      function onKeydown (event) {
+        switch(event.keyCode) {
+          case 87: //w
+          var v = new THREE.Vector3(
+              10*Math.sin(theta),
+              cameraHitbox.getLinearVelocity().y,
+              10*Math.cos(theta)
+              );
+          cameraHitbox.setLinearVelocity(v);
+          break;
+
+          case 83: //w
+          var v = new THREE.Vector3(
+              -10*Math.sin(theta),
+              cameraHitbox.getLinearVelocity().y,
+              -10*Math.cos(theta)
+              );
+          cameraHitbox.setLinearVelocity(v);
+          break;
+
+          case 65: //a
+          var v = new THREE.Vector3(
+              10*Math.sin(theta+Math.PI/2),
+              cameraHitbox.getLinearVelocity().y,
+              10*Math.cos(theta+Math.PI/2)
+              );
+          cameraHitbox.setLinearVelocity(v);
+          break;
+
+          case 68: //d
+          var v = new THREE.Vector3(
+              10*Math.sin(theta-Math.PI/2),
+              cameraHitbox.getLinearVelocity().y,
+              10*Math.cos(theta-Math.PI/2)
+              );
+          cameraHitbox.setLinearVelocity(v);
+          break;
+
+        }
+      }
+
+      // used to stop the slip
+      function onKeyup (event) {
+        var v = new THREE.Vector3(
+            0,
+            cameraHitbox.getLinearVelocity().y,
+            0
+            );
+        cameraHitbox.setLinearVelocity(v);
+      }
+
       document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+      document.addEventListener( 'keydown', onKeydown, false );
+      document.addEventListener( 'keyup', onKeyup, false );
+
 
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;

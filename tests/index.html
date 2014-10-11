@@ -190,6 +190,7 @@
       //Scene, camera renderer
       var theta = 0;
       var phi = 0;
+      var pressed = {};
 
       var camera = new THREE.PerspectiveCamera(75, window.innerWidth /
         window.innerHeight, 0.1, 1000);
@@ -317,9 +318,46 @@
         //camControls.enabled = true;
         //camControls.isOnObject(false);
         //camControls.update();
-        //cameraHitbox.position.set(0,51,i/100);        
+        //cameraHitbox.position.set(0,51,i/100);
+        setSpeed();        
         renderer.render(scene, camera);
       };
+
+      function setSpeed() {
+        var speed = [0,0,0];
+
+        if (pressed.w) {
+          speed[0] += 10*Math.sin(theta);
+          speed[2] += 10*Math.cos(theta);
+        }
+
+        if (pressed.s) {
+          speed[0]+=-10*Math.sin(theta);
+          speed[2]+=-10*Math.cos(theta);
+        }
+
+        if (pressed.a) {
+          speed[0]+=20*Math.sin(theta+Math.PI/2);
+          speed[2]+=20*Math.cos(theta+Math.PI/2);
+        }
+
+        if (pressed.d) {
+          speed[0]+=20*Math.sin(theta-Math.PI/2);
+          speed[2]+=20*Math.cos(theta-Math.PI/2);
+        }
+
+        if (pressed.jump) {
+          if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
+            speed[1]+=30;
+            }
+        }
+        
+        cameraHitbox.setLinearVelocity(new THREE.Vector3(
+            speed[0],
+            speed[1] + cameraHitbox.getLinearVelocity().y,
+            speed[2]
+        ));
+      }
 
 
       spawnBox(scene);
@@ -342,67 +380,57 @@
       }
 
       function onKeydown (event) {
+
         switch(event.keyCode) {
           case 87: //w
-          var v = new THREE.Vector3(
-              10*Math.sin(theta),
-              cameraHitbox.getLinearVelocity().y,
-              10*Math.cos(theta)
-              );
-          cameraHitbox.setLinearVelocity(v);
+          pressed.w = true;
           break;
 
           case 83: //s
-          var v = new THREE.Vector3(
-              -10*Math.sin(theta),
-              cameraHitbox.getLinearVelocity().y,
-              -10*Math.cos(theta)
-              );
-          cameraHitbox.setLinearVelocity(v);
+          pressed.s = true;
           break;
 
           case 65: //a
-          var v = new THREE.Vector3(
-              20*Math.sin(theta+Math.PI/2),
-              cameraHitbox.getLinearVelocity().y,
-              20*Math.cos(theta+Math.PI/2)
-              );
-          cameraHitbox.setLinearVelocity(v);
+          pressed.a = true;
           break;
 
           case 68: //d
-          var v = new THREE.Vector3(
-              20*Math.sin(theta-Math.PI/2),
-              cameraHitbox.getLinearVelocity().y,
-              20*Math.cos(theta-Math.PI/2)
-              );
-          cameraHitbox.setLinearVelocity(v);
+          pressed.d = true;
           break;
 
           case 32: //jump
-          console.log(cameraHitbox.getLinearVelocity().y);
-          if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
-            var v = new THREE.Vector3(
-                cameraHitbox.getLinearVelocity().x,
-                30,
-                cameraHitbox.getLinearVelocity().z
-                );
-            cameraHitbox.setLinearVelocity(v);
-          }
-          break
+          pressed.jump = true;
+          break;
         }
+        setSpeed();
       }
 
       // used to stop the slip
       function onKeyup (event) {
-        if ([87, 83, 65, 68].indexOf(event.keyCode) > -1) {
-          var v = new THREE.Vector3(
-              0,
-              cameraHitbox.getLinearVelocity().y,
-              0
-              );
-          cameraHitbox.setLinearVelocity(v);
+       switch(event.keyCode) {
+          case 87: //w
+          pressed.w = false;
+          break;
+
+          case 83: //s
+          pressed.s = false;
+          break;
+
+          case 65: //a
+          pressed.a = false;
+          break;
+
+          case 68: //d
+          pressed.d = false;
+          break;
+
+          case 32: //jump
+          pressed.jump = false;
+          break;
+
+
         }
+        setSpeed();
       }
 
       document.addEventListener( 'mousemove', onDocumentMouseMove, false );

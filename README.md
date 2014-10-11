@@ -27,7 +27,7 @@ Le joueur "missile" doit empêcher les autres joueurs de rejoindre l'arrivée. E
 
 ## Models
 ![Barrel 1](assets/models/previews/barrel1-preview.png?raw=true)
-![Barrel 2](assets/models/èreviews/barrel2-preview.png?raw=true)
+![Barrel 2](assets/models/previews/barrel2-preview.png?raw=true)
 ![Dynamite](assets/models/previews/dynamite-preview.png?raw=true)
 ![Missile](assets/models/previews/missile-preview.png?raw=true)
 ![Base](assets/models/previews/flag-base-preview.png?raw=true)

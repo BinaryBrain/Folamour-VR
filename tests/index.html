@@ -20,67 +20,29 @@
      Physijs.scripts.ammo = 'ammo.js';
     </script>
     <script type="text/javascript" src="lib/pointerLock.js"></script>
+
+    <script type="text/javascript" src="camera.js"></script>
+    <script type="text/javascript" src="createBox.js"></script>
+    
     <script>
      //Compatibility
      if (navigator.mozGetUserMedia) var nav = "moz";
      else nav = "webkit";
 
-
-
-      
-     
+     //Init scene
      initScene = function() {
-       spawnBox = (function() {
-	 var box_geometry = new THREE.CubeGeometry( 4, 4, 4 ),
-	 handleCollision = function( collided_with, linearVelocity, angularVelocity ) {
-	 },
-	 createBox = function() {
-           //Spawn a box randomly
-           var material = Physijs.createMaterial( //material
-             new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture( 'images/plywood.jpg' ) }),
-		      .6, // medium friction
-		      .3 // low restitution
-           );
-           material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
-           material.map.repeat.set(0.5,0.5);
-           var box = new Physijs.BoxMesh(
-             box_geometry,
-             material
-           );
-           box.collisions = 0;
-           box.position.set(Math.random() * 15 - 7.5,25,Math.random() * 15 - 7.5);           
-           box.rotation.set(Math.random() * Math.PI,Math.random() * Math.PI,Math.random() * Math.PI);           
-           box.castShadow = true;
-	   //Listeners
-           box.addEventListener( 'collision', handleCollision );
-           box.addEventListener( 'ready', spawnBox );
-           scene.add(box);
-	 };
-	 
-	 return function() {
-	   setTimeout( createBox, 1000 );
-	 };
-       })();
-       
        //Camera, renderer
        var theta=0;
        var phi=0;
        var pressed={};
 
-       var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+       //Setup renderer
        var renderer = new THREE.WebGLRenderer({
          antialias: true
        });
-
-       //Setup renderer
        renderer.setSize(window.innerWidth, window.innerHeight);
        document.body.appendChild(renderer.domElement);
-
-       camera.lookAt(new THREE.Vector3(
-         100*Math.sin(theta),
-         100*Math.tan(phi),
-         100*Math.cos(theta)));
-
+       
        //Compteur FPS
        render_stats = new Stats();
        render_stats.domElement.style.position = 'absolute';
@@ -135,7 +97,7 @@
          ground_material,
          0 // mass
        );
-       scene.add( ground );
+       scene.add(ground);
 
        //Wall
        wall = new Physijs.BoxMesh(
@@ -149,93 +111,41 @@
        //Blender model exporter as a js object
        var loader = new THREE.JSONLoader();
        loader.load("blender/monkey.js", function(geometry) {
-
          mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
          mesh.scale.set(10, 10, 10);
          mesh.position.y = 0;
          mesh.position.x = 0;
          scene.add(mesh);
        });
-
        //Some light
        var ambientLight = new THREE.AmbientLight(0xbbbbbb);
        scene.add(ambientLight);
+       //Camera initialization
+       var ret=initCamera(scene);
+       var camera=ret.camera;
+       var cameraHitbox=ret.cameraHitbox;
+       
+       camera.lookAt(new THREE.Vector3(
+         100*Math.sin(theta),
+         100*Math.tan(phi),
+         100*Math.cos(theta)));
+         
+       var norm = normalizePlane(speed);
+       cameraHitbox.setLinearVelocity(new THREE.Vector3(
+         10*speed[0]/norm,
+         speed[1] + cameraHitbox.getLinearVelocity().y,
+         10*speed[2]/norm
+       ));
+       }
 
-       //Camera control
-       //var camControls = new THREE.PointerLockControls(camera);
-       //scene.add(camControls.getObject());
-
-       //Camera
-       cameraHitbox = new Physijs.BoxMesh(
-         new THREE.CylinderGeometry(4, 4, 12),
-         ground_material,
-         50 // mass
-       );
-       cameraHitbox.position.set(0,57,0);
-       cameraHitbox.add(camera);
-       scene.add(cameraHitbox);
-
-       var constraint = new Physijs.DOFConstraint(
-         cameraHitbox, // First object to be constrained
-         0,
-         new THREE.Vector3( 0, 10, 0 ) // point in the scene to apply the constraint
-       );
-       scene.addConstraint(constraint);
-       constraint.setLinearLowerLimit( new THREE.Vector3( -1e30, -1e30, -1e30) ); // sets the lower end of the linear movement along the x, y, and z axes.
-       constraint.setLinearUpperLimit( new THREE.Vector3( 1e30, 1e30, 1e30 ) );
-       constraint.setAngularLowerLimit( new THREE.Vector3( 0, 0, 0 ) ); // sets the lower end of the angular movement, in radians, along the x, y, and z axes.
-       constraint.setAngularUpperLimit( new THREE.Vector3( 0, 0, 0 ) ); // sets the upper end of the angular movement, in radians, along the x, y, and z axes.
-
-       var i = 0;
+       //Render function
        var render = function() {
          requestAnimationFrame(render);
-         //camControls.enabled = true;
-         //camControls.isOnObject(false);
-         //camControls.update();
-         //cameraHitbox.position.set(0,51,i/100);
          setSpeed();        
          renderer.render(scene, camera);
        };
        
-       //Set Camera speed
-       function setSpeed() {
-         var speed = [0,0,0];
-
-         if (pressed.w) {
-           speed[0] += Math.sin(theta);
-           speed[2] += Math.cos(theta);
-         }
-
-         if (pressed.s) {
-           speed[0]+=-Math.sin(theta);
-           speed[2]+=-Math.cos(theta);
-         }
-
-         if (pressed.a) {
-           speed[0]+=Math.sin(theta+Math.PI/2);
-           speed[2]+=Math.cos(theta+Math.PI/2);
-         }
-
-         if (pressed.d) {
-           speed[0]+= Math.sin(theta-Math.PI/2);
-           speed[2]+= Math.cos(theta-Math.PI/2);
-         }
-
-         if (pressed.jump) {
-           if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
-             speed[1]+=20;
-           }
-         }
-         
-         var norm = normalizePlane(speed);
-         cameraHitbox.setLinearVelocity(new THREE.Vector3(
-           10*speed[0]/norm,
-           speed[1] + cameraHitbox.getLinearVelocity().y,
-           10*speed[2]/norm
-         ));
-       }
-
-       spawnBox(scene);
+       createBox(scene);
        scene.simulate();
        render();
 
@@ -261,19 +171,15 @@
            case 87: //w
              pressed.w = true;
              break;
-
            case 83: //s
              pressed.s = true;
              break;
-
            case 65: //a
              pressed.a = true;
              break;
-
            case 68: //d
              pressed.d = true;
              break;
-
            case 32: //jump
              pressed.jump = true;
              break;
@@ -302,14 +208,14 @@
        }
 
        //Binding listeners
-       document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-       document.addEventListener( 'keydown', onKeydown, false );
-       document.addEventListener( 'keyup', onKeyup, false );
+       document.addEventListener('mousemove', onDocumentMouseMove, false);
+       document.addEventListener('keydown', onKeydown, false);
+       document.addEventListener('keyup', onKeyup, false);
        window.addEventListener('resize', onWindowResize, false);
        
        //Resize window
        function onWindowResize() {
-         camera.aspect = window.innerWidth / window.innerHeight;
+         camera.aspect = window.innerWidth/window.innerHeight;
          camera.updateProjectionMatrix();
          renderer.setSize(window.innerWidth, window.innerHeight);
        }
@@ -320,7 +226,8 @@
 
      //Initialize scene
      window.onload = initScene;
-     
+
+     //Helper functions
      function normalizePlane (vec) {
        normsq = vec[0]*vec[0]+vec[2]*vec[2];
        return Math.sqrt(normsq);

@@ -265,6 +265,14 @@
       );
       scene.add( ground );
 
+      wall = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(1, 20, 100),
+        ground_material,
+        0 // mass
+      );
+      wall.position.set(50,10,0);
+      scene.add( wall );
+
 
       //A js model exported from blender
       var loader = new THREE.JSONLoader();
@@ -309,12 +317,6 @@
       var i = 0;
       var render = function() {
         requestAnimationFrame(render);
-
-        //keeps the player vertical
-
-
-
-
         //camControls.enabled = true;
         //camControls.isOnObject(false);
         //camControls.update();

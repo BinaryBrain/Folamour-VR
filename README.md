@@ -1,13 +1,13 @@
 Folamour VR
 ==========
 
-HackZurich Hackathon Project
+HackZürich Hackathon Project
 
 ![Logo](logo/logo-v2.png?raw=true)
 
 French version below.
 
-## Gameplay
+## Gameplay (EN)
 
 The game is composed of a large map with an entrance, a finish point, obstacles and shelters. A missile launcher is placed on a hill.
 
@@ -15,7 +15,7 @@ A player (the "God") controls the missiles using the Occulus Rift and fights the
 
 The players on foot (the "Mortals") must travel from the entrance to the finish point without dying from dangers such as obstacles, TNT, and the God's missiles. These Mortals move in First Person mode, and may communicate to help each others. It is not easy for them to see the missiles, but they can hear them thanks to stereoscopic sound effects.
 
-## Gameplay
+## Gameplay (FR)
 
 Le jeu se constitue d'une grande carte avec un point d'arrivée, un point de départ, des obstacles et des abris. Sur une montagne se trouve un canon lance-missiles.
 
@@ -31,3 +31,12 @@ Le joueur "missile" doit empêcher les autres joueurs de rejoindre l'arrivée. E
 ![Dynamite](assets/models/dynamite-preview.png?raw=true)
 ![Missile](assets/models/missile-preview.png?raw=true)
 ![Base](assets/models/flag-base-preview.png?raw=true)
+
+## Techs
+We are currently using a bunch of new stuff:
+
+- Three.js
+- WebRTC
+- HTML5 audio (with microphones)
+- Oculus Rift (with `oculus-bridge` and the `OculsusRiftEffect` from `three.js`)
+- Physi.js

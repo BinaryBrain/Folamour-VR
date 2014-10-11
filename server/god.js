@@ -16,9 +16,9 @@ var audioElement = null;
 var audioElement2 = null;
 
 window.addEventListener("load", function(){
-	audioElement = document.querySelector("#audio");
+  audioElement = document.querySelector("#audio");
   audioElement2 = document.querySelector("#audio2");
-	init()
+  init()
 })
 
 function init() {
@@ -34,32 +34,36 @@ function init() {
 
   $.get("mortal.php?foo=wait");
   $.get("mortal2.php?foo=wait");
+  $.get("mortal_b.php?foo=wait");
+  $.get("mortal2_b.php?foo=wait");
   
-	getUserMedia({
-		audio: true
-		//,fake: true // fake audio
-	}, function(stream) {
-		console.log('getUserMedia');
-		pc.addStream(stream);
+  getUserMedia({
+    audio: true
+    //,fake: true // fake audio
+  }, function(stream) {
+    console.log('getUserMedia');
+    pc.addStream(stream);
     pc2.addStream(stream);
-		// local sound
-		// attachMediaStream(audioElement, stream);
-		pc.createOffer(onDescription, function(erro) {
+    // local sound
+    // attachMediaStream(audioElement, stream);
+    pc.createOffer(onDescription, function(erro) {
             addStep("Error creating offer: " + erro);
         }, mediaConstraints);
-		pc2.createOffer(onDescription2, function(erro) {
+    pc2.createOffer(onDescription2, function(erro) {
             addStep("Error creating offer: " + erro);
         }, mediaConstraints);
-	}, function(erro) {
-		addStep("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
-	});
-	
-	pc.onaddstream = function(event) {
-		attachMediaStream(audioElement, event.stream);
-	};
+  }, function(erro) {
+    addStep("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
+  });
+  
+  pc.onaddstream = function(event) {
+    addStep("Received audio stream");
+    attachMediaStream(audioElement, event.stream);
+  };
   pc2.onaddstream = function(event) {
-		attachMediaStream(audioElement2, event.stream);
-	};
+    addStep("Received audio stream2");
+    attachMediaStream(audioElement2, event.stream);
+  };
   
   tryGet();
   tryGet2();
@@ -71,7 +75,7 @@ function tryGet() {
         console.log("waiting");
         setTimeout(tryGet, 5000);
       } else {
-        setRemoteDescription(new RTCSessionDescription(JSON.parse(data)))
+        setRemoteDescription(new RTCSessionDescription(JSON.parse(data)));
       }
     });
 }
@@ -82,7 +86,29 @@ function tryGet2() {
         console.log("waiting2");
         setTimeout(tryGet2, 5000);
       } else {
-        setRemoteDescription2(new RTCSessionDescription(JSON.parse(data)))
+        setRemoteDescription2(new RTCSessionDescription(JSON.parse(data)));
+      }
+    });
+}
+
+function tryGetB() {
+  $.get("mortal_b_desc.txt", function(data){
+      if(data === "wait"){
+        console.log("waitingb");
+        setTimeout(tryGetB, 5000);
+      } else {
+        setCandidates(JSON.parse(data));
+      }
+    });
+}
+
+function tryGetB2() {
+  $.get("mortal2_b_desc.txt", function(data){
+      if(data === "wait"){
+        console.log("waiting2b");
+        setTimeout(tryGetB2, 5000);
+      } else {
+        setCandidates2(JSON.parse(data));
       }
     });
 }
@@ -119,10 +145,16 @@ function createChannels() {
   channel2.onclose = onChannelStateChange2;
 }
 
-// TODO: setCandidates2?
 function setCandidates(candidates) {
   for (var i = 0; i < candidates.length; i++) {
       pc.addIceCandidate(new RTCIceCandidate(candidates[i]));
+  }
+  addStep("Added ICE candidates from answerer");
+}
+
+function setCandidates2(candidates) {
+  for (var i = 0; i < candidates.length; i++) {
+      pc2.addIceCandidate(new RTCIceCandidate(candidates[i]));
   }
   addStep("Added ICE candidates from answerer");
 }
@@ -144,8 +176,8 @@ function onDescription(desc) {
   pc.setLocalDescription(desc);
 
   addStep("Send offer to answerer.");
-	var descr = JSON.stringify(desc)
-	$.get("god.php?foo="+descr)
+  var descr = JSON.stringify(desc)
+  $.get("god.php?foo="+descr)
   //addStep('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
 }
 
@@ -154,8 +186,8 @@ function onDescription2(desc) {
   pc2.setLocalDescription(desc);
 
   addStep("Send offer to answerer2.");
-	var descr = JSON.stringify(desc)
-	$.get("god2.php?foo="+descr)
+  var descr = JSON.stringify(desc)
+  $.get("god2.php?foo="+descr)
   //addStep('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
 }
 
@@ -163,8 +195,9 @@ function setRemoteDescription(desc) {
   pc.setRemoteDescription(desc);
   addStep("Answer received and set as remote description");
   if (webrtcDetectedBrowser == "chrome") {
-      addStep("Send ice candidates to answerer. Copy & Paste the next code on the answerer console:");
-      addStep("setCandidates(JSON.parse('" + JSON.stringify(iceCandidates).replace(/\\/g, "\\\\") + "'));")
+      addStep("Send ice candidates to answerer.");
+      $.get("god_b.php?foo="+JSON.stringify(iceCandidates))
+      tryGetB();
   }
 }
 
@@ -172,8 +205,9 @@ function setRemoteDescription2(desc) {
   pc2.setRemoteDescription(desc);
   addStep("Answer received and set as remote description2");
   if (webrtcDetectedBrowser == "chrome") {
-      addStep("Send ice candidates to answerer. Copy & Paste the next code on the answerer console:");
-      addStep("setCandidates(JSON.parse('" + JSON.stringify(iceCandidates).replace(/\\/g, "\\\\") + "'));")
+      addStep("Send ice candidates to answerer2.");
+      $.get("god2_b.php?foo="+JSON.stringify(iceCandidates))
+      tryGetB2();
   }
 }
 

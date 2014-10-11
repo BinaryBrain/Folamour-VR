@@ -26,12 +26,12 @@ Les joueurs "à pied" doivent rejoindre l'arrivée depuis le point de départ sa
 Le joueur "missile" doit empêcher les autres joueurs de rejoindre l'arrivée. En orientant sa tête, il contrôle la trajectoire de missiles, qui peuvent toucher et tuer les pauvres piétons en heurtant le sol.
 
 ## Models
-![Barrel 1](assets/models/barrel1-preview.png?raw=true)
-![Barrel 2](assets/models/barrel2-preview.png?raw=true)
-![Dynamite](assets/models/dynamite-preview.png?raw=true)
-![Missile](assets/models/missile-preview.png?raw=true)
-![Base](assets/models/flag-base-preview.png?raw=true)
-![Robot](assets/models/robot-preview.png?raw=true)
+![Barrel 1](assets/models/previews/barrel1-preview.png?raw=true)
+![Barrel 2](assets/models/èreviews/barrel2-preview.png?raw=true)
+![Dynamite](assets/models/previews/dynamite-preview.png?raw=true)
+![Missile](assets/models/previews/missile-preview.png?raw=true)
+![Base](assets/models/previews/flag-base-preview.png?raw=true)
+![Robot](assets/models/previews/robot-preview.png?raw=true)
 
 ## Techs
 We are currently using a bunch of new stuff:

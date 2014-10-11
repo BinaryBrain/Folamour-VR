@@ -27,7 +27,7 @@ function initCamera(scene)
 
 //camControls.enabled = true;
 //Set camera speed
-function setSpeed(cameraHitbox,pressed) {
+function setSpeed(cameraHitbox,pressed,theta) {
     var speed = [0,0,0];
     if (pressed.w) {
         speed[0] += Math.sin(theta);

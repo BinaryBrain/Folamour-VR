@@ -144,7 +144,7 @@
          //camControls.isOnObject(false);
          //camControls.update();
          //cameraHitbox.position.set(0,51,i/100);
-         setSpeed(cameraHitbox,pressed);        
+         setSpeed(cameraHitbox,pressed,theta);        
          renderer.render(scene, camera);
        };
        
@@ -187,7 +187,7 @@
              pressed.jump = true;
              break;
          }
-         setSpeed(cameraHitbox,pressed);
+         setSpeed(cameraHitbox,pressed,theta);
        }
        function onKeyup (event) {
 	 switch(event.keyCode) {
@@ -207,7 +207,7 @@
              pressed.jump = false;
              break;
          }
-         setSpeed(cameraHitbox,pressed);
+         setSpeed(cameraHitbox,pressed,theta);
        }
 
        //Binding listeners

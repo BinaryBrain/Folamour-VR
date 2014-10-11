@@ -109,11 +109,7 @@
             document.mozPointerLockElement === element ||
             document.webkitPointerLockElement === element) {
 
-            camControls.enabled = true;
-
-          } else {
-
-            camControls.enabled = false;
+            //camControls.enabled = true;
 
           }
 
@@ -121,7 +117,7 @@
 
         var pointerlockerror = function(event) {
 
-          instructions.style.display = '';
+          //instructions.style.display = '';
 
         }
 
@@ -192,7 +188,8 @@
       //document.body.addEventListener("keydown", function() {THREEx.FullScreen.request();}, false);
       var clock = new THREE.Clock();
       //Scene, camera renderer
-
+      var theta = 0;
+      var phi = 0;
 
       var camera = new THREE.PerspectiveCamera(75, window.innerWidth /
         window.innerHeight, 0.1, 1000);
@@ -202,6 +199,10 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
+      camera.lookAt(new THREE.Vector3(
+        100*Math.sin(theta),
+        100*Math.tan(phi),
+        100*Math.cos(theta)));
       //stats
 
       render_stats = new Stats();
@@ -219,7 +220,7 @@
       //camera.position.z =400 ;
 
         var scene = new Physijs.Scene;
-        scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+        scene.setGravity(new THREE.Vector3( 0, -30, 0));
         scene.addEventListener(
         'update',
         function() {
@@ -232,7 +233,7 @@
       window.addEventListener('resize', onWindowResize, false);
 
       //A plane, with tiling texture
-      /*var texture = THREE.ImageUtils.loadTexture('grass.png');
+      /*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(5, 5);
       texture.magFilter = THREE.NearestFilter;
@@ -248,13 +249,13 @@
 
       ground_material = Physijs.createMaterial(
         new THREE.MeshLambertMaterial({ 
-          map: THREE.ImageUtils.loadTexture( 'grass.png' ) 
+          map: THREE.ImageUtils.loadTexture( 'grass.jpg' ) 
         }),
         .8, // high friction
-        .3 // low restitution
+        .9
       );
       ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
-      ground_material.map.repeat.set( 3, 3 );
+      ground_material.map.repeat.set( 4, 4 );
       
       ground = new Physijs.BoxMesh(
         new THREE.CubeGeometry(100, 1, 100),
@@ -280,20 +281,60 @@
       scene.add(ambientLight);
 
       //Camera control
-      var camControls = new THREE.PointerLockControls(camera);
-      scene.add(camControls.getObject());
+      //var camControls = new THREE.PointerLockControls(camera);
+      //scene.add(camControls.getObject());
 
+      cameraHitbox = new Physijs.BoxMesh(
+        new THREE.CylinderGeometry(4, 4, 12),
+        ground_material,
+        50 // mass
+      );
+
+      cameraHitbox.position.set(0,7,0);
+      cameraHitbox.add(camera);
+      scene.add( cameraHitbox );
+      var i = 0;
       var render = function() {
         requestAnimationFrame(render);
-        camControls.enabled = true;
-        camControls.isOnObject(false);
-        camControls.update();
+        //camControls.enabled = true;
+        //camControls.isOnObject(false);
+        //camControls.update();
+        cameraHitbox.position.set(0,1,i/100);
+        i++;
         renderer.render(scene, camera);
       };
 
       spawnBox(scene);
       scene.simulate();
       render();
+
+      function onDocumentMouseMove( event ) {
+        oldX = event.clientX;
+        oldY = event.clientY;
+
+        theta -= event.webkitMovementX/window.innerWidth*100;
+        phi -= event.webkitMovementY/window.innerWidth*50;
+        phi = Math.min( Math.PI/2, Math.max( -Math.PI/2, phi ) );
+
+        camera.lookAt(new THREE.Vector3(
+            cameraHitbox.position.x + 100*Math.sin(theta),
+            cameraHitbox.position.y + 100*Math.tan(phi),
+            cameraHitbox.position.z + 100*Math.cos(theta)));
+        camera.updateMatrix();
+        /*theta = - ( ( event.clientX - onMouseDownPosition.x ) * 0.5 )
+            + onMouseDownTheta;
+        phi = ( ( event.clientY - onMouseDownPosition.y ) * 0.5 )
+            + onMouseDownPhi;
+
+
+        camera.position.x = radious * Math.sin( theta * Math.PI / 360 )
+                            * Math.cos( phi * Math.PI / 360 );
+        camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
+        camera.position.z = radious * Math.cos( theta * Math.PI / 360 )
+                            * Math.cos( phi * Math.PI / 360 );
+        camera.updateMatrix();  */
+      }
+      document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;

@@ -17,6 +17,38 @@ var islands = [
 
 var loader = new THREE.JSONLoader();
 
+function loadCharacter(scene) {
+	loader.load(modelPath+'character.js', function (geometry) {
+		var mesh = new THREE.Mesh(
+			geometry,
+			new THREE.MeshLambertMaterial({
+				map: THREE.ImageUtils.loadTexture(texturePath+'robot.jpg'),
+				ambient: 0xffffff
+			})
+		);
+	    mesh.scale.set(5, 5, 5);
+	    mesh.position.y = 2;
+	    mesh.position.x = 0;
+	    scene.add(mesh);
+	});
+}
+
+function loadObject(scene,object,texture,scale)
+{
+    	loader.load(modelPath+object, function (geometry) {
+		var mesh = new THREE.Mesh(
+			geometry,
+			new THREE.MeshLambertMaterial({
+				map: THREE.ImageUtils.loadTexture(texturePath+texture),
+				ambient: 0xffffff
+			})
+		);
+	    mesh.scale.set(scale, scale, scale);
+	    scene.add(mesh);
+	});
+}
+
+
 function loadSkybox(cb) {
 	loader.load(modelPath+'skybox.js', function (geometry) {
 		var mesh = new THREE.Mesh(

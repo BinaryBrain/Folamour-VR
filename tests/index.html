@@ -374,8 +374,8 @@
         oldX = event.clientX;
         oldY = event.clientY;
 
-        theta -= event[nav+'MovementX']/window.innerWidth*100;
-        phi -= event[nav+'MovementY']/window.innerWidth*100;
+        theta -= event[nav+'MovementX']/window.innerWidth*10;
+        phi -= event[nav+'MovementY']/window.innerWidth*10;
         phi = Math.min( Math.PI/2, Math.max( -Math.PI/2, phi ) );
 
         camera.lookAt(new THREE.Vector3(

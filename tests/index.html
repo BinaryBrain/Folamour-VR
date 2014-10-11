@@ -1,121 +1,125 @@
 <html>
 
   <head>
-	<title>HackZürich</title>
-	<link rel="stylesheet/less" href="style.less">
+  <title>HackZürich</title>
+  <link rel="stylesheet/less" href="style.less">
 </head>
 
 <body>
-	<div id="oculus-status"></div>
-	<script src="lib/less.min.js"></script>
-	<script src="lib/three.min.js"></script>
-	<script src="lib/OculusRiftEffect.js"></script>
-	<script src="lib/oculus-bridge.min.js"></script>
-	<script src="lib/PointerLockControls.js"></script>
-	<script src="lib/THREEx.FullScreen.js"></script>
-	<script type="text/javascript" src="stats.js"></script>
-	<script type="text/javascript" src="lib/physi.js"></script>
-	<script>
-		//Physijs scripts
-		Physijs.scripts.worker = 'physijs_worker.js';
-		Physijs.scripts.ammo = 'ammo.js';
-	</script>
-	<script type="text/javascript" src="lib/pointerLock.js"></script>
+</body>
 
-	<script type="text/javascript" src="camera.js"></script>
-	<script type="text/javascript" src="createBox.js"></script>
-	<script type="text/javascript" src="map.js"></script>
-	<script>
-		var isOculus = true;
-		var camera;
-		var cameraHitbox;
+  <script src="lib/less.min.js"></script>
+  <script src="lib/three.min.js"></script>
+  <script src="lib/OculusRiftEffect.js"></script>
+  <script src="lib/oculus-bridge.min.js"></script>
+  <script src="lib/PointerLockControls.js"></script>
+  <script src="lib/THREEx.FullScreen.js"></script>
+  <script type="text/javascript" src="stats.js"></script>
+  <script type="text/javascript" src="lib/physi.js"></script>
+  <script>
+    //Physijs scripts
+    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.ammo = 'ammo.js';
+  </script>
+  <script type="text/javascript" src="lib/pointerLock.js"></script>
 
-		//Compatibility
-		if (navigator.mozGetUserMedia) var nav = "moz";
-		else nav = "webkit";
+  <script type="text/javascript" src="camera.js"></script>
+  <script type="text/javascript" src="createBox.js"></script>
+  <script type="text/javascript" src="map.js"></script>
+  <script>
+  var isOculus = false;
 
-		//Init scene
-		initScene = function() {
-			//Camera, renderer
-			var theta = 0;
-			var phi = 0;
-			var pressed = {};
+  main();
+  function main() {
+    var camera;
+    var cameraHitbox;
 
-			//Setup renderer
-			var renderer = new THREE.WebGLRenderer({
-				antialias: true
-			});
-			renderer.setSize(window.innerWidth, window.innerHeight);
+    //Compatibility
+    if (navigator.mozGetUserMedia) var nav = "moz";
+    else nav = "webkit";
 
-			// Here is the effect for the Oculus Rift
-			// worldScale 100 means that 100 Units == 1m
-			if(isOculus) {
-				effect = new THREE.OculusRiftEffect(renderer, {
-					worldScale: 100,
-					HMD: {
-						hResolution: 1280,
-						vResolution: 800,
-						hScreenSize: 0.14976,
-						vScreenSize: 0.0936,
-						interpupillaryDistance: 0.055,
-						lensSeparationDistance: 0.065,
-						eyeToScreenDistance: 0.041,
-						distortionK : [1.0, 0.22, 0.24, 0.0],
-						chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
-					}
-				});
-				effect.setSize(window.innerWidth, window.innerHeight);
-			}
+    //Init scene
+    initScene = function() {
+      //Camera, renderer
+      var theta = 0;
+      var phi = 0;
+      var pressed = {};
 
-			document.body.appendChild(renderer.domElement);
+      //Setup renderer
+      var renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
 
-			//Compteur FPS
-			render_stats = new Stats();
-			render_stats.domElement.style.position = 'absolute';
-			render_stats.domElement.style.top = '0px';
-			render_stats.domElement.style.zIndex = 100;
-			document.body.appendChild(render_stats.domElement);
+      // Here is the effect for the Oculus Rift
+      // worldScale 100 means that 100 Units == 1m
+      if(isOculus) {
+        effect = new THREE.OculusRiftEffect(renderer, {
+          worldScale: 100,
+          HMD: {
+            hResolution: 1280,
+            vResolution: 800,
+            hScreenSize: 0.14976,
+            vScreenSize: 0.0936,
+            interpupillaryDistance: 0.055,
+            lensSeparationDistance: 0.065,
+            eyeToScreenDistance: 0.041,
+            distortionK : [1.0, 0.22, 0.24, 0.0],
+            chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
+          }
+        });
+        effect.setSize(window.innerWidth, window.innerHeight);
+      }
 
-			physics_stats = new Stats();
-			physics_stats.domElement.style.position = 'absolute';
-			physics_stats.domElement.style.top = '50px';
-			physics_stats.domElement.style.zIndex = 100;
-			document.body.appendChild(physics_stats.domElement);
+      document.body.appendChild(renderer.domElement);
 
-			//Physijs scene
-			var scene = new Physijs.Scene;
-			scene.setGravity(new THREE.Vector3(0, -500, 0));
-			scene.addEventListener(
-				'update',
-				function() {
-					scene.simulate(undefined, 1);
-					physics_stats.update();
-				}
-			);
+      //Compteur FPS
+      /*render_stats = new Stats();
+      render_stats.domElement.style.position = 'absolute';
+      render_stats.domElement.style.top = '0px';
+      render_stats.domElement.style.zIndex = 100;
+      document.body.appendChild(render_stats.domElement);
 
-			//A plane, with tiling texture
-			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
-			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-			texture.repeat.set(5, 5);
-			texture.magFilter = THREE.NearestFilter;
-			texture.minFilter = THREE.LinearMipMapLinearFilter;
-			var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
-				  new THREE.MeshLambertMaterial({
-				  map: texture,
-				  ambient: 0xbbbbbb
-				  }));
-			plane.overdraw = true;
-			plane.rotation.x = -Math.PI / 2;
-			scene.add(plane);*/
+      physics_stats = new Stats();
+      physics_stats.domElement.style.position = 'absolute';
+      physics_stats.domElement.style.top = '50px';
+      physics_stats.domElement.style.zIndex = 100;
+      document.body.appendChild(physics_stats.domElement);*/
 
-			//Ground
-			/*ground_material = Physijs.createMaterial(
-				new THREE.MeshLambertMaterial({
-					map: THREE.ImageUtils.loadTexture('grass.jpg')
-				}),
-				.8, // high friction
-				.9
-			);*/
+      //Physijs scene
+      var scene = new Physijs.Scene;
+      scene.setGravity(new THREE.Vector3(0, -500, 0));
+      scene.addEventListener(
+        'update',
+        function() {
+          scene.simulate(undefined, 1);
+          //physics_stats.update();
+        }
+      );
+
+      //A plane, with tiling texture
+      /*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(5, 5);
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.LinearMipMapLinearFilter;
+      var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
+          new THREE.MeshLambertMaterial({
+          map: texture,
+          ambient: 0xbbbbbb
+          }));
+      plane.overdraw = true;
+      plane.rotation.x = -Math.PI / 2;
+      scene.add(plane);*/
+
+      //Ground
+      /*ground_material = Physijs.createMaterial(
+        new THREE.MeshLambertMaterial({
+          map: THREE.ImageUtils.loadTexture('grass.jpg')
+        }),
+        .8, // high friction
+        .9
+      );*/
       var textures = {1: 'grass.jpg'};
       var ground_material = [];
       for (i in textures) {
@@ -146,17 +150,17 @@
           }
         }
       }*/
-			//Wall
+      //Wall
 
       var wall = [];
       for (var i=0; i<map.length; i++) {
-  			wall[i] = new Physijs.BoxMesh(
-  				new THREE.CubeGeometry(map[i].l, map[i].h, map[i].d),
-  				ground_material[map[i].tex],
-  				0 // mass
-  			);
-  			wall[i].position.set(map[i].x - map[i].l/2, -map[i].y + map[i].h/2, map[i].z - map[i].d/2);
-  			scene.add(wall[i]);
+        wall[i] = new Physijs.BoxMesh(
+          new THREE.CubeGeometry(map[i].l, map[i].h, map[i].d),
+          ground_material[map[i].tex],
+          0 // mass
+        );
+        wall[i].position.set(map[i].x - map[i].l/2, -map[i].y + map[i].h/2, map[i].z - map[i].d/2);
+        scene.add(wall[i]);
       }
 
       var ground = [];
@@ -170,38 +174,38 @@
         scene.add(ground[i]);
       }
 
-			//Blender model exporter as a js object
-			/*var loader = new THREE.JSONLoader();
-			loader.load("blender/monkey.js", function(geometry) {
-				mesh = new Physijs.ConcaveMesh(
-					geometry,
-					new THREE.MeshNormalMaterial(),
-				0);
-				mesh.scale.set(10, 10, 10);
-				mesh.position.y = 0;
-				mesh.position.x = 0;
-				scene.add(mesh);
-			});*/
+      //Blender model exporter as a js object
+      /*var loader = new THREE.JSONLoader();
+      loader.load("blender/monkey.js", function(geometry) {
+        mesh = new Physijs.ConcaveMesh(
+          geometry,
+          new THREE.MeshNormalMaterial(),
+        0);
+        mesh.scale.set(10, 10, 10);
+        mesh.position.y = 0;
+        mesh.position.x = 0;
+        scene.add(mesh);
+      });*/
 
-			//Blender model exporter as a js object
-			/*var loader = new THREE.JSONLoader();
-			loader.load("../assets/models/terrain0.js", function(geometry) {
-				mesh = new Physijs.HeightfieldMesh(geometry, new THREE.MeshNormalMaterial());
-				mesh.scale.set(10, 10, 10);
-				mesh.position.y = 0;
-				mesh.position.x = 0;
-				scene.add(mesh);
-			});*/
+      //Blender model exporter as a js object
+      /*var loader = new THREE.JSONLoader();
+      loader.load("../assets/models/terrain0.js", function(geometry) {
+        mesh = new Physijs.HeightfieldMesh(geometry, new THREE.MeshNormalMaterial());
+        mesh.scale.set(10, 10, 10);
+        mesh.position.y = 0;
+        mesh.position.x = 0;
+        scene.add(mesh);
+      });*/
 
-			//Some light
-			var ambientLight = new THREE.AmbientLight(0xbbbbbb);
+      //Some light
+      var ambientLight = new THREE.AmbientLight(0xbbbbbb);
 scene.add(ambientLight);
-		  //Skybox
+      //Skybox
 
-			//Camera
-			var ret = initCamera(scene);
-			camera = ret.camera;
-			cameraHitbox = ret.cameraHitbox;
+      //Camera
+      var ret = initCamera(scene);
+      camera = ret.camera;
+      cameraHitbox = ret.cameraHitbox;
 
       camera.lookAt(new THREE.Vector3(
         cameraHitbox.position.x + 10000 * Math.sin(theta),
@@ -209,136 +213,137 @@ scene.add(ambientLight);
         cameraHitbox.position.z + 10000 * Math.cos(theta)));
       camera.updateMatrix();
 
-			if(isOculus) {
-				camera.position.y += 100
+      if(isOculus) {
+        camera.position.y += 100
 
-				// TODO Set camera speed forward (like a missile)
-			}
+        // TODO Set camera speed forward (like a missile)
+      }
 
-			/*
-			camera.lookAt(new THREE.Vector3(
-				100 * Math.sin(theta),
-				100 * Math.tan(phi),
-				100 * Math.cos(theta)));
-			*/
+      /*
+      camera.lookAt(new THREE.Vector3(
+        100 * Math.sin(theta),
+        100 * Math.tan(phi),
+        100 * Math.cos(theta)));
+      */
 
-			//Render function
-			var render = function() {
-				requestAnimationFrame(render);
-				setSpeed(cameraHitbox, pressed, theta);
+      //Render function
+      var render = function() {
+        requestAnimationFrame(render);
+        setSpeed(cameraHitbox, pressed, theta);
 
-				if(isOculus) {
-					effect.render( scene, camera );
-				} else {
-					renderer.render(scene, camera);
-				}
-			};
+        if(isOculus) {
+          effect.render( scene, camera );
+        } else {
+          renderer.render(scene, camera);
+        }
+      };
 
-			//createBox(scene);
-			scene.simulate();
-			render();
+      //createBox(scene);
+      scene.simulate();
+      render();
 
-			//Mouse movements
-			function onDocumentMouseMove(event) {
-				if(!isOculus) {
-					oldX = event.clientX;
-					oldY = event.clientY;
-					//Angles
-					theta -= event[nav + 'MovementX'] / window.innerWidth * 10;
-					phi -= event[nav + 'MovementY'] / window.innerWidth * 10;
-					phi = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, phi));
-					//Orient camera
-					camera.lookAt(new THREE.Vector3(
-						cameraHitbox.position.x + 10000 * Math.sin(theta),
-						cameraHitbox.position.y + 10000 * Math.tan(phi),
-						cameraHitbox.position.z + 10000 * Math.cos(theta)));
-					camera.updateMatrix();
-				}
-			}
+      //Mouse movements
+      function onDocumentMouseMove(event) {
+        if(!isOculus) {
+          oldX = event.clientX;
+          oldY = event.clientY;
+          //Angles
+          theta -= event[nav + 'MovementX'] / window.innerWidth * 10;
+          phi -= event[nav + 'MovementY'] / window.innerWidth * 10;
+          phi = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, phi));
+          //Orient camera
+          camera.lookAt(new THREE.Vector3(
+            cameraHitbox.position.x + 10000 * Math.sin(theta),
+            cameraHitbox.position.y + 10000 * Math.tan(phi),
+            cameraHitbox.position.z + 10000 * Math.cos(theta)));
+          camera.updateMatrix();
+        }
+      }
 
-			//Keyboard management
-			function onKeydown(event) {
-				switch (event.keyCode) {
-					case 87: //w
-						pressed.w = true;
-						break;
-					case 83: //s
-						pressed.s = true;
-						break;
-					case 65: //a
-						pressed.a = true;
-						break;
-					case 68: //d
-						pressed.d = true;
-						break;
-					case 32: //jump
-						pressed.jump = true;
-						break;
-				}
-				setSpeed(cameraHitbox, pressed, theta);
-			}
+      //Keyboard management
+      function onKeydown(event) {
+        switch (event.keyCode) {
+          case 87: //w
+            pressed.w = true;
+            break;
+          case 83: //s
+            pressed.s = true;
+            break;
+          case 65: //a
+            pressed.a = true;
+            break;
+          case 68: //d
+            pressed.d = true;
+            break;
+          case 32: //jump
+            pressed.jump = true;
+            break;
+        }
+        setSpeed(cameraHitbox, pressed, theta);
+      }
 
-			function onKeyup(event) {
-				switch (event.keyCode) {
-					case 87: //w
-						pressed.w = false;
-						break;
-					case 83: //s
-						pressed.s = false;
-						break;
-					case 65: //a
-						pressed.a = false;
-						break;
-					case 68: //d
-						pressed.d = false;
-						break;
-					case 32: //jump
-						pressed.jump = false;
-						break;
-				}
-				setSpeed(cameraHitbox, pressed, theta);
-			}
+      function onKeyup(event) {
+        switch (event.keyCode) {
+          case 87: //w
+            pressed.w = false;
+            break;
+          case 83: //s
+            pressed.s = false;
+            break;
+          case 65: //a
+            pressed.a = false;
+            break;
+          case 68: //d
+            pressed.d = false;
+            break;
+          case 32: //jump
+            pressed.jump = false;
+            break;
+        }
+        setSpeed(cameraHitbox, pressed, theta);
+      }
 
-			//Binding listeners
-			document.addEventListener('mousemove', onDocumentMouseMove, false);
-			document.addEventListener('keydown', onKeydown, false);
-			document.addEventListener('keyup', onKeyup, false);
-			window.addEventListener('resize', onWindowResize, false);
+      //Binding listeners
+      document.addEventListener('mousemove', onDocumentMouseMove, false);
+      document.addEventListener('keydown', onKeydown, false);
+      document.addEventListener('keyup', onKeyup, false);
+      window.addEventListener('resize', onWindowResize, false);
 
-			//Resize window
-			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+      //Resize window
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
 
-				if(isOculus) {
-					effect.setSize(window.innerWidth, window.innerHeight);
-				} else {
-					renderer.setSize(window.innerWidth, window.innerHeight);
-				}
-			}
-		}
+        if(isOculus) {
+          effect.setSize(window.innerWidth, window.innerHeight);
+        } else {
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+      }
+    }
 
-		function onOculusOrientationUpdate(q) {
-			if(isOculus && camera) {
-				camera.quaternion._x = q.x;
-				camera.quaternion._y = q.y;
-				camera.quaternion._z = q.z;
-				camera.quaternion._w = q.w;
-			} else {
-				console.warn("Camera is still not defined.")
-			}
-		}
+    function onOculusOrientationUpdate(q) {
+      if(isOculus && camera) {
+        camera.quaternion._x = q.x;
+        camera.quaternion._y = q.y;
+        camera.quaternion._z = q.z;
+        camera.quaternion._w = q.w;
+      } else {
+        console.warn("Camera is still not defined.")
+      }
+    }
 
-		//Initialize scene
-		window.onload = initScene;
+    //Initialize scene
+    window.onload = initScene;
 
-		//Helper functions
-		function normalizePlane(vec) {
-			normsq = vec[0] * vec[0] + vec[2] * vec[2];
-			return Math.sqrt(normsq);
-		}
-	</script>
-	<script src="oculus-handler.js"></script>
-</body>
+
+  }
+  //Helper functions
+  function normalizePlane(vec) {
+    normsq = vec[0] * vec[0] + vec[2] * vec[2];
+    return Math.sqrt(normsq);
+  }
+  </script>
+  <script src="oculus-handler.js"></script>
 
 </html>

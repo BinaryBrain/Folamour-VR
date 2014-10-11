@@ -19,7 +19,7 @@ from noise import pnoise2, snoise2
     # ];
 octaves=20
 freq=16.0*octaves
-size=256
+size=50
 #Altitude discretization
 def discretize(x):
     x=x+67

@@ -10,18 +10,17 @@ var mediaConstraints = {
 
 var audioElement = null;
 var iceCandidates = [];
+var modifier;
 
 window.addEventListener("load", function(){
   audioElement = document.querySelector("#audio");
-  init()
 })
 
-function init() {
-  addStep("MORTAL2");
-
+function init(mod) {
+  modifier = mod
   pc = new RTCPeerConnection(null, null);
   
-  $.get("god2_b.php?foo=wait");
+  $.get("god"+modifier+"_b.php?foo=wait");
 
   pc.onicecandidate = onIceCandidate;
   pc.ondatachannel = onDataChannel;
@@ -29,11 +28,11 @@ function init() {
     addStep("Received audio stream from God");
     attachMediaStream(audioElement, event.stream);
   };
-  $.get("god2_desc.txt", function(data){receiveOffer(new RTCSessionDescription(JSON.parse(data)))});
+  $.get("god"+modifier+"_desc.txt", function(data){receiveOffer(new RTCSessionDescription(JSON.parse(data)))});
 }
 
 function tryGet() {
-  $.get("god2_b_desc.txt", function(data){
+  $.get("god"+modifier+"_b_desc.txt", function(data){
       if(data === "wait"){
         console.log("waiting for God");
         setTimeout(tryGet, 5000);
@@ -44,7 +43,7 @@ function tryGet() {
 }
 
 function receiveOffer(offerSdp) {
-  addStep("Offer received");
+  addStep("Offer received from God");
 
   pc.setRemoteDescription(offerSdp);
 
@@ -92,7 +91,7 @@ function onDescription(desc) {
   addStep("Answer created and set as peer connection local description.");
   addStep("Send answer to God");
   var descr = JSON.stringify(desc);
-  $.get("mortal2.php?foo="+descr);
+  $.get("mortal"+modifier+".php?foo="+descr);
   if (webrtcDetectedBrowser == "chrome") {
       addStep("Receiving ice candidates to God");
       tryGet();
@@ -106,7 +105,7 @@ function setCandidates(candidates) {
   addStep("Added ICE candidates from God");
   if (webrtcDetectedBrowser == "chrome") {
       addStep("Send ice candidates to God");
-      $.get("mortal2_b.php?foo="+JSON.stringify(iceCandidates));
+      $.get("mortal"+modifier+"_b.php?foo="+JSON.stringify(iceCandidates));
   }
 }
 

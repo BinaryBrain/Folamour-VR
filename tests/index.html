@@ -20,6 +20,9 @@
   Physijs.scripts.worker = 'physijs_worker.js';
   Physijs.scripts.ammo = 'ammo.js';
 
+  if (navigator.mozGetUserMedia) var nav = "moz";
+  else nav = "webkit";
+
     initScene = function() {
        spawnBox = (function() {
     var box_geometry = new THREE.CubeGeometry( 4, 4, 4 ),
@@ -371,8 +374,8 @@
         oldX = event.clientX;
         oldY = event.clientY;
 
-        theta -= event.webkitMovementX/window.innerWidth*100;
-        phi -= event.webkitMovementY/window.innerWidth*100;
+        theta -= event[nav+'MovementX']/window.innerWidth*100;
+        phi -= event[nav+'MovementY']/window.innerWidth*100;
         phi = Math.min( Math.PI/2, Math.max( -Math.PI/2, phi ) );
 
         camera.lookAt(new THREE.Vector3(

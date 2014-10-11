@@ -7,13 +7,12 @@ French version below.
 
 ## Gameplay
 
-The game is composed of a large map with a finish point, an entrance point, obstacles and shelters. A missile launcher is placed on a hill.
+The game is composed of a large map with an entrance, a finish point, obstacles and shelters. A missile launcher is placed on a hill.
 
-A player "missile" (the "God") using the Occulus Rift fight the other players on foot (playing with a regular keyboard/mouse).
+A player (the "God") controls the missiles using the Occulus Rift and fights the other players that are on foot and playing with a regular keyboard/mouse. The God must prevent the other players to reach the finishing line. By orienting his head he controls the trajectory of the missiles in a first person view, missiles that are able to hit and kill the Mortals.
 
 The players on foot (the "Mortals") must travel from the entrance to the finish point without dying from dangers such as obstacles, TNT, and the God's missiles. These Mortals move in First Person mode, and may communicate to help each others. It is not easy for them to see the missiles, but they can hear them thanks to stereoscopic sound effects.
 
-The God must prevent the other players to reach the finish point. By orienting his head, he controls the trajectory of the missiles in first person, missiles that are able to hit and kill the Mortals.
 ## Gameplay
 
 Le jeu se constitue d'une grande carte avec un point d'arrivée, un point de départ, des obstacles et des abris. Sur une montagne se trouve un canon lance-missiles.

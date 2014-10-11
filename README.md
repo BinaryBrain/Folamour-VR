@@ -31,6 +31,7 @@ Le joueur "missile" doit empêcher les autres joueurs de rejoindre l'arrivée. E
 ![Dynamite](assets/models/dynamite-preview.png?raw=true)
 ![Missile](assets/models/missile-preview.png?raw=true)
 ![Base](assets/models/flag-base-preview.png?raw=true)
+![Robot](assets/models/robot-preview.png?raw=true)
 
 ## Techs
 We are currently using a bunch of new stuff:

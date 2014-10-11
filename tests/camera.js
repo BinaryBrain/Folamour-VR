@@ -25,32 +25,5 @@ function initCamera(scene)
     return {camera:camera, cameraHitbox:cameraHitbox};
 }
 
-//Set camera speed
-function setSpeed() {
-    var speed = [0,0,0];
-    if (pressed.w) {
-        speed[0] += Math.sin(theta);
-        speed[2] += Math.cos(theta);
-    }
+         //camControls.enabled = true;
 
-    if (pressed.s) {
-        speed[0]+=-Math.sin(theta);
-        speed[2]+=-Math.cos(theta);
-    }
-
-    if (pressed.a) {
-        speed[0]+=Math.sin(theta+Math.PI/2);
-        speed[2]+=Math.cos(theta+Math.PI/2);
-    }
-
-    if (pressed.d) {
-        speed[0]+= Math.sin(theta-Math.PI/2);
-        speed[2]+= Math.cos(theta-Math.PI/2);
-    }
-
-    if (pressed.jump) {
-        if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
-            speed[1]+=20;
-        }
-    }
-}

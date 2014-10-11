@@ -117,10 +117,15 @@
          mesh.position.x = 0;
          scene.add(mesh);
        });
+
        //Some light
        var ambientLight = new THREE.AmbientLight(0xbbbbbb);
        scene.add(ambientLight);
-       //Camera initialization
+
+       //Camera
+       //var camControls = new THREE.PointerLockControls(camera);
+       //scene.add(camControls.getObject());
+       //camera=initCamera(scene);
        var ret=initCamera(scene);
        var camera=ret.camera;
        var cameraHitbox=ret.cameraHitbox;
@@ -129,18 +134,51 @@
          100*Math.sin(theta),
          100*Math.tan(phi),
          100*Math.cos(theta)));
+       
+       //Set camera speed
+       function setSpeed() {
+         var speed = [0,0,0];
+         if (pressed.w) {
+           speed[0] += Math.sin(theta);
+           speed[2] += Math.cos(theta);
+         }
+
+         if (pressed.s) {
+           speed[0]+=-Math.sin(theta);
+           speed[2]+=-Math.cos(theta);
+         }
+
+         if (pressed.a) {
+           speed[0]+=Math.sin(theta+Math.PI/2);
+           speed[2]+=Math.cos(theta+Math.PI/2);
+         }
+
+         if (pressed.d) {
+           speed[0]+= Math.sin(theta-Math.PI/2);
+           speed[2]+= Math.cos(theta-Math.PI/2);
+         }
+
+         if (pressed.jump) {
+           if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
+             speed[1]+=20;
+           }
+         }
          
-       var norm = normalizePlane(speed);
-       cameraHitbox.setLinearVelocity(new THREE.Vector3(
-         10*speed[0]/norm,
-         speed[1] + cameraHitbox.getLinearVelocity().y,
-         10*speed[2]/norm
-       ));
+         var norm = normalizePlane(speed);
+         cameraHitbox.setLinearVelocity(new THREE.Vector3(
+           10*speed[0]/norm,
+           speed[1] + cameraHitbox.getLinearVelocity().y,
+           10*speed[2]/norm
+         ));
        }
 
        //Render function
        var render = function() {
          requestAnimationFrame(render);
+         //camControls.enabled = true;
+         //camControls.isOnObject(false);
+         //camControls.update();
+         //cameraHitbox.position.set(0,51,i/100);
          setSpeed();        
          renderer.render(scene, camera);
        };

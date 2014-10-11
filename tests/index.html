@@ -123,9 +123,6 @@
        scene.add(ambientLight);
 
        //Camera
-       //var camControls = new THREE.PointerLockControls(camera);
-       //scene.add(camControls.getObject());
-       //camera=initCamera(scene);
        var ret=initCamera(scene);
        var camera=ret.camera;
        var cameraHitbox=ret.cameraHitbox;
@@ -134,16 +131,10 @@
          100*Math.sin(theta),
          100*Math.tan(phi),
          100*Math.cos(theta)));
-       
-
-
+    
        //Render function
        var render = function() {
          requestAnimationFrame(render);
-         //camControls.enabled = true;
-         //camControls.isOnObject(false);
-         //camControls.update();
-         //cameraHitbox.position.set(0,51,i/100);
          setSpeed(cameraHitbox,pressed,theta);        
          renderer.render(scene, camera);
        };

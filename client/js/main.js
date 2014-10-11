@@ -91,7 +91,7 @@
         .8, // high friction
         .9
       );*/
-      var textures = {1: 'grass.jpg'};
+      var textures = {1: '../assets/textures/grass.jpg'};
       var ground_material = [];
       for (i in textures) {
         ground_material[i] = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(textures[i]) } );

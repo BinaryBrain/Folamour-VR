@@ -20,6 +20,7 @@ window.addEventListener("load", function(){
 })
 
 function init(mod) {
+  log("Initializing")
   modifier = mod;
   pc = new RTCPeerConnection(null, null);
   

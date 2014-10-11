@@ -96,13 +96,11 @@
 			);
 
 			loadSkybox(function (mesh) {
-				mesh.scale.set(100, 100, 100);
-				mesh.position.y = 0;
-				mesh.position.x = 0;
 				scene.add(mesh);
 			});
-		  loadCharacter(scene);
-		  loadObject();
+		  loadCharacter(function(mesh){
+		    scene.add(mesh);
+		  });
 
 			loadMissile(function (missile) {
 				missile.scale.set(10, 10, 10);

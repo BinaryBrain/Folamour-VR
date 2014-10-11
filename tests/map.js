@@ -17,44 +17,13 @@ var islands = [
 
 var loader = new THREE.JSONLoader();
 
-function loadCharacter(scene) {
-	loader.load(modelPath+'character.js', function (geometry) {
-		var mesh = new THREE.Mesh(
-			geometry,
-			new THREE.MeshLambertMaterial({
-				map: THREE.ImageUtils.loadTexture(texturePath+'robot.jpg'),
-				ambient: 0xffffff
-			})
-		);
-	    mesh.scale.set(5, 5, 5);
-	    mesh.position.y = 2;
-	    mesh.position.x = 0;
-	    scene.add(mesh);
-	});
-}
-
-function loadObject(scene,object,texture,scale)
+function loadObject(model,texture,cb)
 {
-    	loader.load(modelPath+object, function (geometry) {
+    	loader.load(modelPath+model, function (geometry) {
 		var mesh = new THREE.Mesh(
 			geometry,
 			new THREE.MeshLambertMaterial({
 				map: THREE.ImageUtils.loadTexture(texturePath+texture),
-				ambient: 0xffffff
-			})
-		);
-	    mesh.scale.set(scale, scale, scale);
-	    scene.add(mesh);
-	});
-}
-
-
-function loadSkybox(cb) {
-	loader.load(modelPath+'skybox.js', function (geometry) {
-		var mesh = new THREE.Mesh(
-			geometry,
-			new THREE.MeshLambertMaterial({
-				map: THREE.ImageUtils.loadTexture(texturePath+'skybox.jpg'),
 				ambient: 0xffffff
 			})
 		);
@@ -64,8 +33,7 @@ function loadSkybox(cb) {
 		}
 	});
 }
-
-function loadEntity(model, texture, cb) {
+function loadPhysicalObject(model, texture, cb) {
 	loader.load(modelPath+model, function (geometry) {
 		var mesh = new Physijs.ConcaveMesh(
 			geometry,
@@ -78,11 +46,31 @@ function loadEntity(model, texture, cb) {
 		cb(mesh);
 	});
 }
-
+function loadSkybox(cb)
+{
+    loadObject('skybox.js', 'skybox.jpg', function (mesh) {
+	mesh.scale.set(100, 100, 100);
+	mesh.position.y = 0;
+	mesh.position.x = 0;
+	if(cb) {
+	    cb(mesh);
+	}
+	});
+}
 function loadMissile(cb) {
-	loadEntity('missile.js', 'missile.jpg', function (mesh) {
+	loadPhysicalObject('missile.js', 'missile.jpg', function (mesh) {
 		if(cb) {
 			cb(mesh);
+		}
+	});
+}
+function loadCharacter(cb) {
+	loadObject('character.js', 'robot.jpg', function (mesh) {
+	    if(cb) {
+		mesh.scale.set(5, 5, 5);
+		mesh.position.y = 2;
+		mesh.position.x = 0;
+		cb(mesh);
 		}
 	});
 }

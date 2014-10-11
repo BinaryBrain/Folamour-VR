@@ -36,8 +36,8 @@ function init() {
   $.get("mortal2.php?foo=wait");
   
 	getUserMedia({
-		audio: true,
-		fake: true // fake audio
+		audio: true
+		//,fake: true // fake audio
 	}, function(stream) {
 		console.log('getUserMedia');
 		pc.addStream(stream);

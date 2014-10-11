@@ -8,9 +8,11 @@ var mediaConstraints = {
     }
 };
 
+var audioElement = null;
 var iceCandidates = [];
 
 window.addEventListener("load", function(){
+	audioElement = document.querySelector("#audio");
 	init()
 })
 
@@ -20,6 +22,9 @@ function init() {
   pc = new RTCPeerConnection(null, null);
   pc.onicecandidate = onIceCandidate;
   pc.ondatachannel = onDataChannel;
+  pc.onaddstream = function(event) {
+		attachMediaStream(audioElement, event.stream);
+	};
   $.get("god2_desc.txt", function(data){receiveOffer(new RTCSessionDescription(JSON.parse(data)))});
 }
 

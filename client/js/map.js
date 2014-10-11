@@ -10,3 +10,21 @@ var islands = [
 {l: 80, h: 1, d: 200, x: -380, y: -1, z: -1040, tex: 1}, // S bridge
 {l: 800, h: 1, d: 200, x: -20, y: -1, z: -1240, tex: 1} // S island
 ];
+
+var loader = new THREE.JSONLoader();
+
+function loadSkybox(cb) {
+	loader.load("assets/models/skybox.js", function (geometry) {
+		var mesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(1000, 1000),
+			new THREE.MeshLambertMaterial({
+				map: THREE.ImageUtils.loadTexture('assets/textures/skybox.jpg'),
+				ambient: 0xbbbbbb
+			})
+		);
+
+		if(cb) {
+			cb(mesh);
+		}
+	});
+}

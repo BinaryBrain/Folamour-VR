@@ -95,6 +95,14 @@
 				}
 			);
 
+			loadSkybox(function (mesh) {
+				mesh.scale.set(100, 100, 100);
+				mesh.position.y = 0;
+				mesh.position.x = 0;
+				scene.add(mesh);
+				console.log(mesh)
+			});
+
 			//A plane, with tiling texture
 			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
 			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
@@ -103,7 +111,7 @@
 			texture.minFilter = THREE.LinearMipMapLinearFilter;
 			var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
 					new THREE.MeshLambertMaterial({
-					map: texture,
+					map: THREE.ImageUtils.loadTexture('grass.b.png');,
 					ambient: 0xbbbbbb
 					}));
 			plane.overdraw = true;

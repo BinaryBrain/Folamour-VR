@@ -2,6 +2,9 @@ var channel;
 var channel2;
 var pc;
 var pc2;
+
+var callbackOnMessage;
+
 var mediaConstraints = {
     optional: [],
     mandatory: {
@@ -20,8 +23,13 @@ window.addEventListener("load", function(){
   audioElement2 = document.querySelector("#audio2");
 })
 
+function sendInfo(data) {
+  channel.send(data);
+  channel2.send(data);
+}
+
 function init() {
-  addStep("GOD");
+  log("GOD");
 
   pc = new RTCPeerConnection(null, null);
   pc.onicecandidate = onIceCandidate;
@@ -40,27 +48,27 @@ function init() {
     audio: true
     //,fake: true // fake audio
   }, function(stream) {
-    console.log('getUserMedia');
+    log('getUserMedia');
     pc.addStream(stream);
     pc2.addStream(stream);
     // local sound
     // attachMediaStream(audioElement, stream);
     pc.createOffer(onDescription, function(erro) {
-            addStep("Error creating offer: " + erro);
+            log("Error creating offer: " + erro);
         }, mediaConstraints);
     pc2.createOffer(onDescription2, function(erro) {
-            addStep("Error creating offer: " + erro);
+            log("Error creating offer: " + erro);
         }, mediaConstraints);
   }, function(erro) {
-    addStep("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
+    log("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
   });
   
   pc.onaddstream = function(event) {
-    addStep("Received audio stream");
+    log("Received audio stream");
     attachMediaStream(audioElement, event.stream);
   };
   pc2.onaddstream = function(event) {
-    addStep("Received audio stream2");
+    log("Received audio stream2");
     attachMediaStream(audioElement2, event.stream);
   };
   
@@ -71,7 +79,7 @@ function init() {
 function tryGet() {
   $.get("php/mortal_desc.txt", function(data){
       if(data === "wait"){
-        console.log("waiting");
+        log("waiting");
         setTimeout(tryGet, 5000);
       } else {
         setRemoteDescription(new RTCSessionDescription(JSON.parse(data)));
@@ -82,7 +90,7 @@ function tryGet() {
 function tryGet2() {
   $.get("php/mortal2_desc.txt", function(data){
       if(data === "wait"){
-        console.log("waiting2");
+        log("waiting2");
         setTimeout(tryGet2, 5000);
       } else {
         setRemoteDescription2(new RTCSessionDescription(JSON.parse(data)));
@@ -93,7 +101,7 @@ function tryGet2() {
 function tryGetB() {
   $.get("php/mortal_b_desc.txt", function(data){
       if(data === "wait"){
-        console.log("waitingb");
+        log("waitingb");
         setTimeout(tryGetB, 5000);
       } else {
         setCandidates(JSON.parse(data));
@@ -104,7 +112,7 @@ function tryGetB() {
 function tryGetB2() {
   $.get("php/mortal2_b_desc.txt", function(data){
       if(data === "wait"){
-        console.log("waiting2b");
+        log("waiting2b");
         setTimeout(tryGetB2, 5000);
       } else {
         setCandidates2(JSON.parse(data));
@@ -113,14 +121,14 @@ function tryGetB2() {
 }
 
 function onIceCandidate(event) {
-  //console.log("onIceCandidate");
+  //log("onIceCandidate");
   if (event.candidate) {
       iceCandidates.push(event.candidate);
   }
 }
 
 function onIceCandidate2(event) {
-  //console.log("onIceCandidate");
+  //log("onIceCandidate");
   if (event.candidate) {
       iceCandidates2.push(event.candidate);
   }
@@ -130,7 +138,7 @@ function createChannels() {
   channel = pc.createDataChannel('RTCDataChannel', {
       reliable: false
   });
-  addStep("DataChannel created");
+  log("DataChannel created");
   channel.onmessage = onMessage;
   channel.onopen = onChannelStateChange;
   channel.onclose = onChannelStateChange;
@@ -138,7 +146,7 @@ function createChannels() {
   channel2 = pc2.createDataChannel('RTCDataChannel', {
       reliable: false
   });
-  addStep("DataChannel2 created");
+  log("DataChannel2 created");
   channel2.onmessage = onMessage;
   channel2.onopen = onChannelStateChange2;
   channel2.onclose = onChannelStateChange2;
@@ -148,53 +156,55 @@ function setCandidates(candidates) {
   for (var i = 0; i < candidates.length; i++) {
       pc.addIceCandidate(new RTCIceCandidate(candidates[i]));
   }
-  addStep("Added ICE candidates from answerer");
+  log("Added ICE candidates from answerer");
 }
 
 function setCandidates2(candidates) {
   for (var i = 0; i < candidates.length; i++) {
       pc2.addIceCandidate(new RTCIceCandidate(candidates[i]));
   }
-  addStep("Added ICE candidates from answerer");
+  log("Added ICE candidates from answerer");
 }
 
 function onChannelStateChange(event) {
   if (event.type == "open") {
-      addStep("CONNECTION ESTABLISHED: now use channel.send('message') on console to send messages");
+      log("CONNECTION ESTABLISHED: now use channel.send('message') on console to send messages");
+      log("Connection established with mortal");
   }
 }
 
 function onChannelStateChange2(event) {
   if (event.type == "open") {
-      addStep("CONNECTION ESTABLISHED: now use channel2.send('message') on console to send messages");
+      log("CONNECTION ESTABLISHED: now use channel2.send('message') on console to send messages");
+      log("Connection established with mortal2");
   }
 }
 
 function onDescription(desc) {
-  addStep("Offer created and set as peer connection local description");
+  log("Offer created and set as peer connection local description");
   pc.setLocalDescription(desc);
 
-  addStep("Send offer to answerer.");
+  log("Send offer to answerer.");
   var descr = JSON.stringify(desc)
   $.get("php/god.php?foo="+descr)
-  //addStep('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
+  //log('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
 }
 
 function onDescription2(desc) {
-  addStep("Offer created and set as peer connection local description2");
+  log("Offer created and set as peer connection local description2");
   pc2.setLocalDescription(desc);
 
-  addStep("Send offer to answerer2.");
+  log("Send offer to answerer2.");
   var descr = JSON.stringify(desc)
   $.get("php/god2.php?foo="+descr)
-  //addStep('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
+  //log('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
 }
 
 function setRemoteDescription(desc) {
   pc.setRemoteDescription(desc);
-  addStep("Answer received and set as remote description");
+  log("Answer received and set as remote description");
   if (webrtcDetectedBrowser == "chrome") {
-      addStep("Send ice candidates to answerer.");
+      log("Send ice candidates to answerer.");
       $.get("php/god_b.php?foo="+JSON.stringify(iceCandidates))
       tryGetB();
   }
@@ -202,47 +212,30 @@ function setRemoteDescription(desc) {
 
 function setRemoteDescription2(desc) {
   pc2.setRemoteDescription(desc);
-  addStep("Answer received and set as remote description2");
+  log("Answer received and set as remote description2");
   if (webrtcDetectedBrowser == "chrome") {
-      addStep("Send ice candidates to answerer2.");
+      log("Send ice candidates to answerer2.");
       $.get("php/god2_b.php?foo="+JSON.stringify(iceCandidates))
       tryGetB2();
   }
 }
 
 function close() {
-  console.log("close");
+  log("close");
   channel.close();
   pc.close();
   channel2.close();
   pc2.close();
 }
 
+function setCallbackOnMessage(fun) {
+  callbackOnMessage = fun;
+}
+
 function onMessage(event) {
-  addStep('Message received: ' + event.data);
+  callbackOnMessage(event);
 }
 
-function selectText(element) {
-  if (document.selection) {
-      var range = document.body.createTextRange();
-      range.moveToElementText(element);
-      range.select();
-  }
-  else if (window.getSelection) {
-      var range = document.createRange();
-      range.selectNode(element);
-      window.getSelection().addRange(range);
-  }
-}
-
-function addStep(message) {
-  var content = document.getElementById('content');
-  var div = document.createElement('div');
-  div.setAttribute('class', 'step');
-  div.innerHTML = message;
-  div.onclick = function() {
-      selectText(this);
-  };
-  content.appendChild(div);
-  window.scrollTo(0, document.body.scrollHeight);
+function log(message) {
+  console.log(message);
 }

@@ -1,6 +1,5 @@
  var isOculus = false;
 
-  main();
   function main() {
     var camera;
     var cameraHitbox;
@@ -307,7 +306,10 @@ scene.add(ambientLight);
     //Initialize scene
     window.onload = initScene;
 
-
+    return function(){
+      
+      
+    };
   }
   //Helper functions
   function normalizePlane(vec) {

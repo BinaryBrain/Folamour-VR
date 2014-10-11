@@ -4,9 +4,8 @@
     <link rel="stylesheet/less" href="style/style.less">
      <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
      <script type="text/javascript" src="js/adapter/adapter.js"></script>
-     <script type="text/javascript" src="js/god.js"></script> 
+     <script type="text/javascript" src="js/mortal.js"></script> 
      <audio id="audio" autoplay="autoplay" controls="controls"></audio>
-     <audio id="audio2" autoplay="autoplay" controls="controls"></audio>
     </head>
     <body>    
     <div id="content"></div>
@@ -30,7 +29,9 @@
     <script type="text/javascript" src="js/map.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     <script>
-      init();
-      setCallbackOnMessage(main());
+      init('');
+      //occulus_rift = 0;
+      //setCallbackOnMessage(main());
+      main();
     </script>
 </html>

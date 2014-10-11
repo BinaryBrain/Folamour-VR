@@ -25,7 +25,6 @@
 	<script type="text/javascript" src="camera.js"></script>
 	<script type="text/javascript" src="createBox.js"></script>
 	<script type="text/javascript" src="map.js"></script>
-
 	<script>
 		var isOculus = false;
 		var camera;
@@ -314,9 +313,6 @@
 				camera.quaternion._y = q.y;
 				camera.quaternion._z = q.z;
 				camera.quaternion._w = q.w;
-				//console.log("quat", quat)
-				//console.log("cam", camera.quaternion)
-				//camera.updateMatrix()
 			} else {
 				console.warn("Camera is still not defined.")
 			}

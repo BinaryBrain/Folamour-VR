@@ -3,15 +3,19 @@ var pc;
 var mediaConstraints = {
     optional: [],
     mandatory: {
-        OfferToReceiveAudio: false,
+        OfferToReceiveAudio: true,
         OfferToReceiveVideo: false
     }
 };
 
 var iceCandidates = [];
 
+window.addEventListener("load", function(){
+	init()
+})
+
 function init() {
-    addStep("ANSWERER");
+    addStep("GOD");
 
     pc = new RTCPeerConnection([], {});
     pc.onicecandidate = onIceCandidate;
@@ -26,25 +30,18 @@ function receiveOffer(offerSdp) {
     pc.ondatachannel = onDataChannel;
     pc.setRemoteDescription(offerSdp);
 
-    if (webrtcDetectedBrowser == "chrome") {
-        pc.createAnswer(onDescription, onDescription, mediaConstraints);
-    }
-    else {
-        // firefox bug needs to establish an audio or video stream for data connection
-        getUserMedia({
-            audio: true,
-            fake: true
-        }, function(stream) {
-            console.log('getUserMedia');
-            pc.addStream(stream);
-            pc.createAnswer(onDescription, onDescription, mediaConstraints);
+	getUserMedia({
+		audio: true
+	}, function(stream) {
+		console.log('getUserMedia');
+		pc.addStream(stream);
+		pc.createAnswer(onDescription, function(erro) {
+            addStep("Error creating answer: " + erro);
+        }, mediaConstraints);
 
-        }, function(erro) {
-            addStep("Error creating fake audio stream: " + erro);
-        });
-    }
-
-
+	}, function(erro) {
+		addStep("Error creating audio stream: " + erro);
+	});
 }
 
 function onDataChannel(event) {

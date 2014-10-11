@@ -3,36 +3,46 @@ var pc;
 var mediaConstraints = {
     optional: [],
     mandatory: {
-        OfferToReceiveAudio: false,
+        OfferToReceiveAudio: true,
         OfferToReceiveVideo: false
     }
 };
 
 var iceCandidates = [];
+var audioElement = null;
+
+window.addEventListener("load", function(){
+	audioElement = document.querySelector("#audio");
+	init()
+})
 
 function init() {
-    addStep("OFFERER");
+    addStep("MORTAL");
 
     pc = new RTCPeerConnection([], {});
     pc.onicecandidate = onIceCandidate;
 
     createChannel();
-    if (webrtcDetectedBrowser == "chrome") {
-        pc.createOffer(onDescription, onDescription, mediaConstraints);
-    }
-    else {
-        getUserMedia({
-            audio: true,
-            fake: true
-        }, function(stream) {
-            //console.log('getUserMedia');
-            pc.addStream(stream);
-            pc.createOffer(onDescription, onDescription, mediaConstraints);
 
-        }, function(erro) {
-            addStep("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
-        });
-    }
+	getUserMedia({
+		audio: true,
+		fake: true // fake audio
+	}, function(stream) {
+		console.log('getUserMedia');
+		pc.addStream(stream);
+		// local sound
+		// attachMediaStream(audioElement, stream);
+		pc.createOffer(onDescription, function(erro) {
+            addStep("Error creating offer: " + erro);
+        }, mediaConstraints);
+
+	}, function(erro) {
+		addStep("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
+	});
+	
+	pc.onaddstream = function(event) {
+		attachMediaStream(audioElement, event.stream);
+	};
 }
 
 function onIceCandidate(event) {

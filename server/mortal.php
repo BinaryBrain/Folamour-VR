@@ -1,5 +1,5 @@
 <?php
 
-file_put_contents("saved.txt", $_POST["foo"]);
+file_put_contents("mortal_desc.txt", $_GET["foo"]);
 
 ?>

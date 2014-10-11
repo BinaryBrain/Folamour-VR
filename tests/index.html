@@ -287,24 +287,37 @@
       cameraHitbox = new Physijs.BoxMesh(
         new THREE.CylinderGeometry(4, 4, 12),
         ground_material,
-        50000 // mass
+        50 // mass
       );
 
       cameraHitbox.position.set(0,57,0);
       cameraHitbox.add(camera);
       scene.add( cameraHitbox );
+
+      var constraint = new Physijs.DOFConstraint(
+          cameraHitbox, // First object to be constrained
+          0,
+          new THREE.Vector3( 0, 10, 0 ) // point in the scene to apply the constraint
+      );
+      scene.addConstraint(constraint);
+      constraint.setLinearLowerLimit( new THREE.Vector3( -1e30, -1e30, -1e30) ); // sets the lower end of the linear movement along the x, y, and z axes.
+      constraint.setLinearUpperLimit( new THREE.Vector3( 1e30, 1e30, 1e30 ) );
+      constraint.setAngularLowerLimit( new THREE.Vector3( 0, 0, 0 ) ); // sets the lower end of the angular movement, in radians, along the x, y, and z axes.
+      constraint.setAngularUpperLimit( new THREE.Vector3( 0, 0, 0 ) ); // sets the upper end of the angular movement, in radians, along the x, y, and z axes.
+
       var i = 0;
       var render = function() {
         requestAnimationFrame(render);
 
         //keeps the player vertical
-        cameraHitbox.rotation.z = 0;
+
+
+
 
         //camControls.enabled = true;
         //camControls.isOnObject(false);
         //camControls.update();
         //cameraHitbox.position.set(0,51,i/100);        
-        i++;
         renderer.render(scene, camera);
       };
 
@@ -339,7 +352,7 @@
           cameraHitbox.setLinearVelocity(v);
           break;
 
-          case 83: //w
+          case 83: //s
           var v = new THREE.Vector3(
               -10*Math.sin(theta),
               cameraHitbox.getLinearVelocity().y,
@@ -350,33 +363,46 @@
 
           case 65: //a
           var v = new THREE.Vector3(
-              10*Math.sin(theta+Math.PI/2),
+              20*Math.sin(theta+Math.PI/2),
               cameraHitbox.getLinearVelocity().y,
-              10*Math.cos(theta+Math.PI/2)
+              20*Math.cos(theta+Math.PI/2)
               );
           cameraHitbox.setLinearVelocity(v);
           break;
 
           case 68: //d
           var v = new THREE.Vector3(
-              10*Math.sin(theta-Math.PI/2),
+              20*Math.sin(theta-Math.PI/2),
               cameraHitbox.getLinearVelocity().y,
-              10*Math.cos(theta-Math.PI/2)
+              20*Math.cos(theta-Math.PI/2)
               );
           cameraHitbox.setLinearVelocity(v);
           break;
 
+          case 32: //jump
+          console.log(cameraHitbox.getLinearVelocity().y);
+          if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
+            var v = new THREE.Vector3(
+                cameraHitbox.getLinearVelocity().x,
+                30,
+                cameraHitbox.getLinearVelocity().z
+                );
+            cameraHitbox.setLinearVelocity(v);
+          }
+          break
         }
       }
 
       // used to stop the slip
       function onKeyup (event) {
-        var v = new THREE.Vector3(
-            0,
-            cameraHitbox.getLinearVelocity().y,
-            0
-            );
-        cameraHitbox.setLinearVelocity(v);
+        if ([87, 83, 65, 68].indexOf(event.keyCode) > -1) {
+          var v = new THREE.Vector3(
+              0,
+              cameraHitbox.getLinearVelocity().y,
+              0
+              );
+          cameraHitbox.setLinearVelocity(v);
+        }
       }
 
       document.addEventListener( 'mousemove', onDocumentMouseMove, false );

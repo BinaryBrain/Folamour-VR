@@ -26,7 +26,7 @@
 	<script type="text/javascript" src="createBox.js"></script>
 	<script type="text/javascript" src="map.js"></script>
 	<script>
-		var isOculus = false;
+		var isOculus = true;
 		var camera;
 		var cameraHitbox;
 
@@ -58,7 +58,7 @@
 						hScreenSize: 0.14976,
 						vScreenSize: 0.0936,
 						interpupillaryDistance: 0.055,
-						lensSeparationDistance: 0.64,
+						lensSeparationDistance: 0.064,
 						eyeToScreenDistance: 0.041,
 						distortionK : [1.0, 0.22, 0.24, 0.0],
 						chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
@@ -202,12 +202,15 @@
 			camera = ret.camera;
 			cameraHitbox = ret.cameraHitbox;
 
-
       camera.lookAt(new THREE.Vector3(
         cameraHitbox.position.x + 10000 * Math.sin(theta),
         cameraHitbox.position.y + 10000 * Math.tan(phi),
         cameraHitbox.position.z + 10000 * Math.cos(theta)));
       camera.updateMatrix();
+
+			if(isOculus) {
+				// TODO Set camera speed forward (like a missile)
+			}
 
 			/*
 			camera.lookAt(new THREE.Vector3(

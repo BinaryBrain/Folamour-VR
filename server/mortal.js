@@ -9,79 +9,57 @@ var mediaConstraints = {
 };
 
 var iceCandidates = [];
-var audioElement = null;
 
 window.addEventListener("load", function(){
-	audioElement = document.querySelector("#audio");
 	init()
 })
 
 function init() {
-  addStep("MORTAL1");
+  addStep("MORTAL");
 
   pc = new RTCPeerConnection(null, null);
   pc.onicecandidate = onIceCandidate;
+  pc.ondatachannel = onDataChannel;
+  $.get("god_desc.txt", function(data){receiveOffer(new RTCSessionDescription(JSON.parse(data)))});
+}
 
-  createChannel();
+function receiveOffer(offerSdp) {
+  addStep("Offer received");
 
-  $.get("god.php?foo=wait");
-  
+  pc.ondatachannel = onDataChannel;
+  pc.setRemoteDescription(offerSdp);
+
 	getUserMedia({
-		audio: true,
-		fake: true // fake audio
+		audio: true
 	}, function(stream) {
 		console.log('getUserMedia');
 		pc.addStream(stream);
-		// local sound
-		// attachMediaStream(audioElement, stream);
-		pc.createOffer(onDescription, function(erro) {
-            addStep("Error creating offer: " + erro);
+		pc.createAnswer(onDescription, function(erro) {
+            addStep("Error creating answer: " + erro);
         }, mediaConstraints);
 
 	}, function(erro) {
-		addStep("Error obtaining fake audio stream:<br/>" + JSON.stringify(erro));
+		addStep("Error creating audio stream: " + erro);
 	});
-	
-	pc.onaddstream = function(event) {
-		attachMediaStream(audioElement, event.stream);
-	};
-  
-  tryGet();
 }
 
-function tryGet() {
-  $.get("god_desc.txt", function(data){
-      if(data === "wait"){
-        console.log("waiting");
-        setTimeout(tryGet, 2000);
-      } else {
-        setRemoteDescription(new RTCSessionDescription(JSON.parse(data)))
-      }
-    });
-}
-
-function onIceCandidate(event) {
-  //console.log("onIceCandidate");
-  if (event.candidate) {
-      iceCandidates.push(event.candidate);
-  }
-}
-
-function createChannel() {
-  channel = pc.createDataChannel('RTCDataChannel', {
-      reliable: false
-  });
-  addStep("DataChannel created");
+function onDataChannel(event) {
+  channel = event.channel;
+  addStep("Data channel obtained");
   channel.onmessage = onMessage;
   channel.onopen = onChannelStateChange;
   channel.onclose = onChannelStateChange;
 }
 
-function setCandidates(candidates) {
-  for (var i = 0; i < candidates.length; i++) {
-      pc.addIceCandidate(new RTCIceCandidate(candidates[i]));
+function setCandidate(candidateJson) {
+  var candidate = JSON.parse(candidateJson);
+  pc.addIceCandidate(candidate);
+}
+
+function onIceCandidate(event) {
+  if (event.candidate) {
+      iceCandidates.push(event.candidate);
   }
-  addStep("Added ICE candidates from answerer");
 }
 
 function onChannelStateChange(event) {
@@ -91,20 +69,21 @@ function onChannelStateChange(event) {
 }
 
 function onDescription(desc) {
-  addStep("Offer created and set as peer connection local description");
   pc.setLocalDescription(desc);
-
-  addStep("Send offer to answerer.");
-	var descr = JSON.stringify(desc)
-	$.get("mortal.php?foo="+descr)
-  //addStep('receiveOffer(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));')
+  addStep("Answer created and set as peer connection local description.");
+  addStep("Send answer to offerer.");
+  var descr = JSON.stringify(desc)
+  $.get("mortal.php?foo="+descr)
+  // addStep('setRemoteDescription(new RTCSessionDescription(JSON.parse(\'' + JSON.stringify(desc).replace(/\\/g, "\\\\") + '\')));');
 }
 
-function setRemoteDescription(desc) {
-  pc.setRemoteDescription(desc);
-  addStep("Answer received and set as remote description");
+function setCandidates(candidates) {
+  for (var i = 0; i < candidates.length; i++) {
+      pc.addIceCandidate(new RTCIceCandidate(candidates[i]));
+  }
+  addStep("Added ICE candidates from offerer");
   if (webrtcDetectedBrowser == "chrome") {
-      addStep("Send ice candidates to answerer. Copy & Paste the next code on the answerer console:");
+      addStep("Send ice candidates to offerer. Copy & Paste the next code on the offerer console:");
       addStep("setCandidates(JSON.parse('" + JSON.stringify(iceCandidates).replace(/\\/g, "\\\\") + "'));")
   }
 }
@@ -116,7 +95,7 @@ function close() {
 }
 
 function onMessage(event) {
-  addStep('Message received: ' + event.data);
+    addStep('Message received: ' + event.data);
 }
 
 function selectText(element) {

@@ -25,5 +25,5 @@ function createBox(scene)
     box.addEventListener('collision', handleCollision);
     //box.addEventListener( 'ready', spawnBox );
     scene.add(box);
-    setTimeout(function () { createBox(scene); }, 1000);
+    setTimeout(function () { createBox(scene); }, 10000);
 }

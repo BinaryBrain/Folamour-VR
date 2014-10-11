@@ -3,7 +3,7 @@ function initCamera(scene)
 {
     var camera=new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     var cameraHitbox = new Physijs.BoxMesh(
-        new THREE.CylinderGeometry(4, 4, 12),
+        new THREE.CylinderGeometry(2, 2, 12),
         0,
         50 // mass
     );

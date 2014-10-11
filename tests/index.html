@@ -22,8 +22,25 @@
 	<script type="text/javascript" src="createBox.js"></script>
 
 	<script>
-		var isOculus = false;
 
+    var map = [
+    [
+      [1,1,1,1,1],
+      [1,1,1,1,1],
+      [1,1,1,1,1],
+      [1,1,1,1,1],
+      [1,1,1, , ],
+    ],
+    [ 
+      [1,1,1,1,1],
+      [1,1,1,1,1],
+      [1,1, , , ],
+      [ , , , , ],
+      [ , , , , ]
+    ]
+    ];
+
+		var isOculus = false;
 		//Compatibility
 		if (navigator.mozGetUserMedia) var nav = "moz";
 		else nav = "webkit";
@@ -78,7 +95,7 @@
 
 			//Physijs scene
 			var scene = new Physijs.Scene;
-			scene.setGravity(new THREE.Vector3(0, -30, 0));
+			scene.setGravity(new THREE.Vector3(0, -45, 0));
 			scene.addEventListener(
 				'update',
 				function() {
@@ -103,33 +120,54 @@
 	scene.add(plane);*/
 
 			//Ground
-			ground_material = Physijs.createMaterial(
+			/*ground_material = Physijs.createMaterial(
 				new THREE.MeshLambertMaterial({
 					map: THREE.ImageUtils.loadTexture('grass.jpg')
 				}),
 				.8, // high friction
 				.9
-			);
-			ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
-			ground_material.map.repeat.set(4, 4);
-			ground = new Physijs.BoxMesh(
-				new THREE.CubeGeometry(100, 1, 100),
-				ground_material,
-				0 // mass
-			);
-			scene.add(ground);
+			);*/
+      var textures = {1: 'grass.jpg'};
+      var ground_material = [];
+      for (i in textures) {
+        ground_material[i] = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(textures[i]) } );
+        ground_material[i].map.wrapS = ground_material[i].map.wrapT = THREE.RepeatWrapping;
+        //ground_material.map.repeat.set(1, 1);
+      }
+      
 
+      var xLen = map[0].length;
+      var yLen = map[0][0].length;
+
+      var ground = [];
+      for (var i = 0; i<map.length; i++) {
+        ground[i] = [];
+        for (j=0; j<xLen; j++) {
+          ground[i][j] = [];
+          for (k=0; k<yLen; k++) {
+            if (map[i][j][k]) {
+              ground[i][j][k] = new Physijs.BoxMesh(
+                new THREE.CubeGeometry(5, 5, 5),
+                ground_material[map[i][j][k]],
+                0 // mass
+              );
+              ground[i][j][k].position.set(5*(-xLen/2+j), 5*i, 5*(-yLen/2+k));
+              scene.add(ground[i][j][k]);
+            }
+          }
+        }
+      }
 			//Wall
-			wall = new Physijs.BoxMesh(
+			/*wall = new Physijs.BoxMesh(
 				new THREE.CubeGeometry(1, 20, 100),
 				ground_material,
 				0 // mass
 			);
 			wall.position.set(50, 10, 0);
-			scene.add(wall);
+			scene.add(wall);*/
 
 			//Blender model exporter as a js object
-			var loader = new THREE.JSONLoader();
+			/*var loader = new THREE.JSONLoader();
 			loader.load("blender/monkey.js", function(geometry) {
 				mesh = new Physijs.ConcaveMesh(
             geometry,
@@ -139,17 +177,17 @@
 				mesh.position.y = 0;
 				mesh.position.x = 0;
 				scene.add(mesh);
-			});
+			});*/
 
       //Blender model exporter as a js object
-      var loader = new THREE.JSONLoader();
-      loader.load("../assets/models/terrain.js", function(geometry) {
-        mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+      /*var loader = new THREE.JSONLoader();
+      loader.load("../assets/models/terrain0.js", function(geometry) {
+        mesh = new Physijs.HeightfieldMesh(geometry, new THREE.MeshNormalMaterial());
         mesh.scale.set(10, 10, 10);
         mesh.position.y = 0;
         mesh.position.x = 0;
         scene.add(mesh);
-      });
+      });*/
 
 			//Some light
 			var ambientLight = new THREE.AmbientLight(0xbbbbbb);
@@ -177,7 +215,7 @@
 				}
 			};
 
-			createBox(scene);
+			//createBox(scene);
 			scene.simulate();
 			render();
 

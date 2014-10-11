@@ -1,6 +1,6 @@
 <html>
 
-  <head>
+<head>
 	<title>HackZürich</title>
 	<link rel="stylesheet/less" href="style.less">
 </head>
@@ -50,7 +50,7 @@
 
 			// Here is the effect for the Oculus Rift
 			// worldScale 100 means that 100 Units == 1m
-			if(isOculus) {
+			if (isOculus) {
 				effect = new THREE.OculusRiftEffect(renderer, {
 					worldScale: 100,
 					HMD: {
@@ -61,11 +61,11 @@
 						interpupillaryDistance: 0.055,
 						lensSeparationDistance: 0.065,
 						eyeToScreenDistance: 0.041,
-						distortionK : [1.0, 0.22, 0.24, 0.0],
-						chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
+						distortionK: [1.0, 0.22, 0.24, 0.0],
+						chromaAbParameter: [0.996, -0.004, 1.014, 0.0]
 					}
 				});
-				missileSpeed=new THREE.Vector3(0,0,0);
+				missileSpeed = new THREE.Vector3(0, 0, 0);
 				effect.setSize(window.innerWidth, window.innerHeight);
 			}
 
@@ -102,10 +102,10 @@
 			texture.magFilter = THREE.NearestFilter;
 			texture.minFilter = THREE.LinearMipMapLinearFilter;
 			var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
-				  new THREE.MeshLambertMaterial({
-				  map: texture,
-				  ambient: 0xbbbbbb
-				  }));
+					new THREE.MeshLambertMaterial({
+					map: texture,
+					ambient: 0xbbbbbb
+					}));
 			plane.overdraw = true;
 			plane.rotation.x = -Math.PI / 2;
 			scene.add(plane);*/
@@ -118,59 +118,63 @@
 				.8, // high friction
 				.9
 			);*/
-      var textures = {1: 'grass.jpg'};
-      var ground_material = [];
-      for (i in textures) {
-        ground_material[i] = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture(textures[i]) } );
-        ground_material[i].map.wrapS = ground_material[i].map.wrapT = THREE.RepeatWrapping;
-        //ground_material.map.repeat.set(1, 1);
-      }
-      
+			var textures = {
+				1: 'grass.jpg'
+			};
+			var ground_material = [];
+			for (i in textures) {
+				ground_material[i] = new THREE.MeshPhongMaterial({
+					map: THREE.ImageUtils.loadTexture(textures[i])
+				});
+				ground_material[i].map.wrapS = ground_material[i].map.wrapT = THREE.RepeatWrapping;
+				//ground_material.map.repeat.set(1, 1);
+			}
 
-/*      var xLen = map[0].length;
-      var yLen = map[0][0].length;
 
-      var ground = [];
-      for (var i = 0; i<map.length; i++) {
-        ground[i] = [];
-        for (j=0; j<xLen; j++) {
-          ground[i][j] = [];
-          for (k=0; k<yLen; k++) {
-            if (map[i][j][k]) {
-              ground[i][j][k] = new Physijs.BoxMesh(
-                new THREE.CubeGeometry(5, 5, 5),
-                ground_material[map[i][j][k]],
-                0 // mass
-              );
-              ground[i][j][k].position.set(5*(-xLen/2+j), 5*i, 5*(-yLen/2+k));
-              scene.add(ground[i][j][k]);
-            }
-          }
-        }
-      }*/
+			/*			var xLen = map[0].length;
+						var yLen = map[0][0].length;
+
+						var ground = [];
+						for (var i = 0; i<map.length; i++) {
+							ground[i] = [];
+							for (j=0; j<xLen; j++) {
+								ground[i][j] = [];
+								for (k=0; k<yLen; k++) {
+									if (map[i][j][k]) {
+										ground[i][j][k] = new Physijs.BoxMesh(
+											new THREE.CubeGeometry(5, 5, 5),
+											ground_material[map[i][j][k]],
+											0 // mass
+										);
+										ground[i][j][k].position.set(5*(-xLen/2+j), 5*i, 5*(-yLen/2+k));
+										scene.add(ground[i][j][k]);
+									}
+								}
+							}
+						}*/
 			//Wall
 
-      var wall = [];
-      for (var i=0; i<map.length; i++) {
-  			wall[i] = new Physijs.BoxMesh(
-  				new THREE.CubeGeometry(map[i].l, map[i].h, map[i].d),
-  				ground_material[map[i].tex],
-  				0 // mass
-  			);
-  			wall[i].position.set(map[i].x - map[i].l/2, -map[i].y + map[i].h/2, map[i].z - map[i].d/2);
-  			scene.add(wall[i]);
-      }
+			var wall = [];
+			for (var i = 0; i < map.length; i++) {
+				wall[i] = new Physijs.BoxMesh(
+					new THREE.CubeGeometry(map[i].l, map[i].h, map[i].d),
+					ground_material[map[i].tex],
+					0 // mass
+				);
+				wall[i].position.set(map[i].x - map[i].l / 2, -map[i].y + map[i].h / 2, map[i].z - map[i].d / 2);
+				scene.add(wall[i]);
+			}
 
-      var ground = [];
-      for (var i=0; i<islands.length; i++) {
-        ground[i] = new Physijs.BoxMesh(
-          new THREE.CubeGeometry(islands[i].l, islands[i].h, islands[i].d),
-          ground_material[islands[i].tex],
-          0 // mass
-        );
-        ground[i].position.set(islands[i].x-islands[i].l/2, -islands[i].y + islands[i].h/2, islands[i].z-islands[i].d/2);
-        scene.add(ground[i]);
-      }
+			var ground = [];
+			for (var i = 0; i < islands.length; i++) {
+				ground[i] = new Physijs.BoxMesh(
+					new THREE.CubeGeometry(islands[i].l, islands[i].h, islands[i].d),
+					ground_material[islands[i].tex],
+					0 // mass
+				);
+				ground[i].position.set(islands[i].x - islands[i].l / 2, -islands[i].y + islands[i].h / 2, islands[i].z - islands[i].d / 2);
+				scene.add(ground[i]);
+			}
 
 			//Blender model exporter as a js object
 			/*var loader = new THREE.JSONLoader();
@@ -204,13 +208,13 @@
 			camera = ret.camera;
 			cameraHitbox = ret.cameraHitbox;
 
-      camera.lookAt(new THREE.Vector3(
-        cameraHitbox.position.x + 10000 * Math.sin(theta),
-        cameraHitbox.position.y + 10000 * Math.tan(phi),
-        cameraHitbox.position.z + 10000 * Math.cos(theta)));
-      camera.updateMatrix();
+			camera.lookAt(new THREE.Vector3(
+				cameraHitbox.position.x + 10000 * Math.sin(theta),
+				cameraHitbox.position.y + 10000 * Math.tan(phi),
+				cameraHitbox.position.z + 10000 * Math.cos(theta)));
+			camera.updateMatrix();
 
-			if(isOculus) {
+			if (isOculus) {
 				camera.position.y += 100;
 			}
 
@@ -225,9 +229,9 @@
 			var render = function() {
 				requestAnimationFrame(render);
 
-				if(isOculus) {
+				if (isOculus) {
 					camera.position.add(missileSpeed);
-					effect.render( scene, camera );
+					effect.render(scene, camera);
 				} else {
 					setSpeed(cameraHitbox, pressed, theta);
 					renderer.render(scene, camera);
@@ -240,7 +244,7 @@
 
 			//Mouse movements
 			function onDocumentMouseMove(event) {
-				if(!isOculus) {
+				if (!isOculus) {
 					oldX = event.clientX;
 					oldY = event.clientY;
 					//Angles
@@ -310,7 +314,7 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
-				if(isOculus) {
+				if (isOculus) {
 					effect.setSize(window.innerWidth, window.innerHeight);
 				} else {
 					renderer.setSize(window.innerWidth, window.innerHeight);
@@ -319,13 +323,13 @@
 		}
 
 		function onOculusOrientationUpdate(q) {
-			if(isOculus && camera) {
+			if (isOculus && camera) {
 				camera.quaternion._x = q.x;
 				camera.quaternion._y = q.y;
 				camera.quaternion._z = q.z;
 				camera.quaternion._w = q.w;
 				//camera.quaternion.multiplyVector3(THREE.Vector3(1,0,0),-1*missileSpeed);
-				missileSpeed=new THREE.Vector3(0,0,1).applyQuaternion(camera.quaternion);
+				missileSpeed = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
 				missileSpeed.multiplyScalar(-1);
 				//missileSpeed=new THREE.Vector3(-10,0,0);
 				//missileSpeed=THREE.Vector3(0,0,0);

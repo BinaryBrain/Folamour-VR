@@ -38,5 +38,5 @@ We are currently using a bunch of new stuff:
 - Three.js
 - WebRTC
 - HTML5 audio (with microphones)
-- Oculus Rift (with `oculus-bridge` and the `OculsusRiftEffect` from `three.js`)
+- Oculus Rift (with `oculus-bridge` and `OculsusRiftEffect` from `three.js`)
 - Physi.js

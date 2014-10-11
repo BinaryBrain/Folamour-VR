@@ -6,38 +6,38 @@
  *  tree.
  */
 button {
-  margin: 0 1em 1em 0;
-  width: 90px;
+  margin: 0 20px 20px 0;
+  width: 86.5px;
 }
 div#buttons {
-  margin: 0 0 1em 0;
-}
-div#send {
-  margin: 0 20px 1em 0;
-}
-div#sendReceive {
   border-bottom: 1px solid #eee;
-  margin: 0;
-  padding: 0 0 10px 0;
+  margin: 0 0 20px 0;
 }
-div#sendReceive > div {
+div#states {
+  border-bottom: 1px solid #eee;
+}
+div#states > div {
+  margin: 0 0 20px 0;
+  min-height: 24px; /* to cope with Unicode character size :^| */
+}
+div.label {
   display: inline-block;
-  width: calc(50% - 20px);
+  font-weight: 400;
+  width: 111px;
 }
-form {
-  margin: 0 0 1em 0;
-  white-space: nowrap;
+div.value {
+  display: inline-block;
 }
-form span {
-  font-weight: 300;
-  margin: 0 1em 0 0;
-  white-space: normal;
+video {
+  margin: 0 0 20px 0;
+  width: calc(50% - 12px);
 }
-textarea {
-  color: #444;
-  font-size: 0.9em;
-  font-weight: 300;
-  height: 7.0em;
-  padding: 5px;
-  width: calc(100% - 10px);
+video#video1 {
+  margin: 0 20px 20px 0;
+}
+
+@media screen and (min-width: 730px) {
+  video {
+    height: 231px;
+  }
 }

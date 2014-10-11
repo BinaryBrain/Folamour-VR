@@ -1,12 +1,16 @@
 <html>
 
   <head>
-	<title>HackZurich</title>
+	<title>HackZürich</title>
+	<link rel="stylesheet/less" href="style.less">
 </head>
 
 <body>
+	<div id="oculus-status"></div>
+	<script src="lib/less.min.js"></script>
 	<script src="lib/three.min.js"></script>
 	<script src="lib/OculusRiftEffect.js"></script>
+	<script src="lib/oculus-bridge.min.js"></script>
 	<script src="lib/PointerLockControls.js"></script>
 	<script src="lib/THREEx.FullScreen.js"></script>
 	<script type="text/javascript" src="stats.js"></script>
@@ -21,8 +25,29 @@
 	<script type="text/javascript" src="camera.js"></script>
 	<script type="text/javascript" src="createBox.js"></script>
 	<script type="text/javascript" src="map.js"></script>
+
 	<script>
 		var isOculus = false;
+		var camera;
+		var cameraHitbox;
+
+		var map = [
+			[
+				[1,1,1,1,1],
+				[1,1,1,1,1],
+				[1,1,1,1,1],
+				[1,1,1,1,1],
+				[1,1,1, , ],
+			],
+			[ 
+				[1,1,1,1,1],
+				[1,1,1,1,1],
+				[1,1, , , ],
+				[ , , , , ],
+				[ , , , , ]
+			]
+		];
+
 		//Compatibility
 		if (navigator.mozGetUserMedia) var nav = "moz";
 		else nav = "webkit";
@@ -51,7 +76,7 @@
 						hScreenSize: 0.14976,
 						vScreenSize: 0.0936,
 						interpupillaryDistance: 0.055,
-						lensSeparationDistance: 0.064,
+						lensSeparationDistance: 0.64,
 						eyeToScreenDistance: 0.041,
 						distortionK : [1.0, 0.22, 0.24, 0.0],
 						chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
@@ -88,18 +113,18 @@
 
 			//A plane, with tiling texture
 			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
-	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-	texture.repeat.set(5, 5);
-	texture.magFilter = THREE.NearestFilter;
-	texture.minFilter = THREE.LinearMipMapLinearFilter;
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
-		  new THREE.MeshLambertMaterial({
-		  map: texture,
-		  ambient: 0xbbbbbb
-		  }));
-	plane.overdraw = true;
-	plane.rotation.x = -Math.PI / 2;
-	scene.add(plane);*/
+			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set(5, 5);
+			texture.magFilter = THREE.NearestFilter;
+			texture.minFilter = THREE.LinearMipMapLinearFilter;
+			var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
+				  new THREE.MeshLambertMaterial({
+				  map: texture,
+				  ambient: 0xbbbbbb
+				  }));
+			plane.overdraw = true;
+			plane.rotation.x = -Math.PI / 2;
+			scene.add(plane);*/
 
 			//Ground
 			/*ground_material = Physijs.createMaterial(
@@ -152,24 +177,24 @@
 			/*var loader = new THREE.JSONLoader();
 			loader.load("blender/monkey.js", function(geometry) {
 				mesh = new Physijs.ConcaveMesh(
-            geometry,
-            new THREE.MeshNormalMaterial(),
-            0);
+					geometry,
+					new THREE.MeshNormalMaterial(),
+				0);
 				mesh.scale.set(10, 10, 10);
 				mesh.position.y = 0;
 				mesh.position.x = 0;
 				scene.add(mesh);
 			});*/
 
-      //Blender model exporter as a js object
-      /*var loader = new THREE.JSONLoader();
-      loader.load("../assets/models/terrain0.js", function(geometry) {
-        mesh = new Physijs.HeightfieldMesh(geometry, new THREE.MeshNormalMaterial());
-        mesh.scale.set(10, 10, 10);
-        mesh.position.y = 0;
-        mesh.position.x = 0;
-        scene.add(mesh);
-      });*/
+			//Blender model exporter as a js object
+			/*var loader = new THREE.JSONLoader();
+			loader.load("../assets/models/terrain0.js", function(geometry) {
+				mesh = new Physijs.HeightfieldMesh(geometry, new THREE.MeshNormalMaterial());
+				mesh.scale.set(10, 10, 10);
+				mesh.position.y = 0;
+				mesh.position.x = 0;
+				scene.add(mesh);
+			});*/
 
 			//Some light
 			var ambientLight = new THREE.AmbientLight(0xbbbbbb);
@@ -177,13 +202,15 @@
 
 			//Camera
 			var ret = initCamera(scene);
-			var camera = ret.camera;
-			var cameraHitbox = ret.cameraHitbox;
+			camera = ret.camera;
+			cameraHitbox = ret.cameraHitbox;
 
+			/*
 			camera.lookAt(new THREE.Vector3(
 				100 * Math.sin(theta),
 				100 * Math.tan(phi),
 				100 * Math.cos(theta)));
+			*/
 
 			//Render function
 			var render = function() {
@@ -203,6 +230,7 @@
 
 			//Mouse movements
 			function onDocumentMouseMove(event) {
+				if(!isOculus) {
 					oldX = event.clientX;
 					oldY = event.clientY;
 					//Angles
@@ -216,9 +244,10 @@
 						cameraHitbox.position.z + 10000 * Math.cos(theta)));
 					camera.updateMatrix();
 				}
-				//Keyboard management
-			function onKeydown(event) {
+			}
 
+			//Keyboard management
+			function onKeydown(event) {
 				switch (event.keyCode) {
 					case 87: //w
 						pressed.w = true;
@@ -277,9 +306,21 @@
 					renderer.setSize(window.innerWidth, window.innerHeight);
 				}
 			}
-		};
+		}
 
-		function animate() {}
+		function onOculusOrientationUpdate(q) {
+			if(isOculus && camera) {
+				camera.quaternion._x = q.x;
+				camera.quaternion._y = q.y;
+				camera.quaternion._z = q.z;
+				camera.quaternion._w = q.w;
+				//console.log("quat", quat)
+				//console.log("cam", camera.quaternion)
+				//camera.updateMatrix()
+			} else {
+				console.warn("Camera is still not defined.")
+			}
+		}
 
 		//Initialize scene
 		window.onload = initScene;
@@ -290,6 +331,7 @@
 			return Math.sqrt(normsq);
 		}
 	</script>
+	<script src="oculus-handler.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,24 @@
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+#oculus-status {
+	position: absolute;
+	z-index: 1000;
+
+	right: 10px;
+	top: 10px;
+
+	color: green;
+
+	&.error {
+		color: red;
+	}
+}

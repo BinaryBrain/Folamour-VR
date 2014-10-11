@@ -1,155 +1,195 @@
 <html>
-  <head>
-    <title>My first Three.js app</title>
-    <style>canvas { width: 100%; height: 100% }</style>
-  </head>
-  <body>
-    <script src="lib/three.min.js"></script>
-    <script src="lib/PointerLockControls.js"></script>
-    <script src="lib/THREEx.FullScreen.js"></script>
-    <script>
 
-			// http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+<head>
+  <title>My first Three.js app</title>
+  <style>
+    canvas {
+      width: 100%;
+      height: 100%
+    }
+  </style>
+</head>
 
-			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+<body>
+  <script src="lib/three.min.js"></script>
+  <script src="lib/PointerLockControls.js"></script>
+  <script src="lib/THREEx.FullScreen.js"></script>
+  <script type="text/javascript" src="lib/physi.js"></script>
+  <script>
+    initScene = function() {
 
-			if ( havePointerLock ) {
+      // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 
-				var element = document.body;
+      var havePointerLock = 'pointerLockElement' in document ||
+        'mozPointerLockElement' in document ||
+        'webkitPointerLockElement' in document;
 
-				var pointerlockchange = function ( event ) {
+      if (havePointerLock) {
 
-					if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
+        var element = document.body;
 
-						camControls.enabled = true;
+        var pointerlockchange = function(event) {
 
-					} else {
+          if (document.pointerLockElement === element ||
+            document.mozPointerLockElement === element ||
+            document.webkitPointerLockElement === element) {
 
-						camControls.enabled = false;
+            camControls.enabled = true;
 
-					}
+          } else {
 
-				}
+            camControls.enabled = false;
 
-				var pointerlockerror = function ( event ) {
+          }
 
-					instructions.style.display = '';
+        }
 
-				}
+        var pointerlockerror = function(event) {
 
-				// Hook pointer lock state change events
-				document.addEventListener( 'pointerlockchange', pointerlockchange, false );
-				document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
-				document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+          instructions.style.display = '';
 
-				document.addEventListener( 'pointerlockerror', pointerlockerror, false );
-				document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
-				document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
+        }
 
-				document.body.addEventListener( 'click', function ( event ) {
-					// Ask the browser to lock the pointer
-					element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+        // Hook pointer lock state change events
+        document.addEventListener('pointerlockchange',
+          pointerlockchange, false);
+        document.addEventListener('mozpointerlockchange',
+          pointerlockchange, false);
+        document.addEventListener('webkitpointerlockchange',
+          pointerlockchange, false);
 
-					if ( /Firefox/i.test( navigator.userAgent ) ) {
+        document.addEventListener('pointerlockerror',
+          pointerlockerror, false);
+        document.addEventListener('mozpointerlockerror',
+          pointerlockerror, false);
+        document.addEventListener('webkitpointerlockerror',
+          pointerlockerror, false);
 
-						var fullscreenchange = function ( event ) {
+        document.body.addEventListener('click', function(event) {
+          // Ask the browser to lock the pointer
+          element.requestPointerLock = element.requestPointerLock ||
+            element.mozRequestPointerLock || element.webkitRequestPointerLock;
 
-							if ( document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element ) {
+          if (/Firefox/i.test(navigator.userAgent)) {
 
-								document.removeEventListener( 'fullscreenchange', fullscreenchange );
-								document.removeEventListener( 'mozfullscreenchange', fullscreenchange );
+            var fullscreenchange = function(event) {
 
-								element.requestPointerLock();
-							}
+              if (document.fullscreenElement ===
+                element || document.mozFullscreenElement ===
+                element || document.mozFullScreenElement ===
+                element) {
 
-						}
+                document.removeEventListener(
+                  'fullscreenchange',
+                  fullscreenchange);
+                document.removeEventListener(
+                  'mozfullscreenchange',
+                  fullscreenchange);
 
-						document.addEventListener( 'fullscreenchange', fullscreenchange, false );
-						document.addEventListener( 'mozfullscreenchange', fullscreenchange, false );
+                element.requestPointerLock();
+              }
 
-						element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
+            }
 
-						element.requestFullscreen();
+            document.addEventListener(
+              'fullscreenchange',
+              fullscreenchange, false);
+            document.addEventListener(
+              'mozfullscreenchange',
+              fullscreenchange, false);
 
-					} else {
+            element.requestFullscreen = element.requestFullscreen ||
+              element.mozRequestFullscreen || element
+              .mozRequestFullScreen || element.webkitRequestFullscreen;
 
-						element.requestPointerLock();
+            element.requestFullscreen();
 
-					}
+          } else {
 
-				}, false );
+            element.requestPointerLock();
 
-			}
+          }
 
+        }, false);
 
-    </script>
-    <script>
-     //document.body.addEventListener("keydown", function() {THREEx.FullScreen.request();}, false);
-     var clock = new THREE.Clock();
-     //Scene, camera renderer
-     var scene = new THREE.Scene();
-     var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-     var renderer = new THREE.WebGLRenderer();
-     renderer.setSize(window.innerWidth, window.innerHeight);
-     document.body.appendChild(renderer.domElement);
-     //camera.position.z =400 ;
+      }
 
-     //Resize
-     window.addEventListener( 'resize', onWindowResize, false );
-     
-     //A plane, with tiling texture
-     var texture = THREE.ImageUtils.loadTexture('grass.png');
-     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-     texture.repeat.set(5, 5);
-     texture.magFilter = THREE.NearestFilter;
-     texture.minFilter = THREE.LinearMipMapLinearFilter;
-     var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshLambertMaterial({ map: texture, ambient: 0xbbbbbb }));
-     plane.overdraw=true;
-     plane.rotation.x = -Math.PI/2;
-     scene.add(plane);
+      //document.body.addEventListener("keydown", function() {THREEx.FullScreen.request();}, false);
+      var clock = new THREE.Clock();
+      //Scene, camera renderer
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(75, window.innerWidth /
+        window.innerHeight, 0.1, 1000);
+      var renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+      //camera.position.z =400 ;
 
-     //A js model exported from blender
-     var loader = new THREE.JSONLoader();
-     loader.load( "blender/monkey.js", function( geometry ) {
+      //Resize
+      window.addEventListener('resize', onWindowResize, false);
 
-       mesh = new THREE.Mesh( geometry, new THREE.MeshNormalMaterial() );
-       mesh.scale.set( 10, 10, 10 );
-       mesh.position.y = 0;
-       mesh.position.x = 0;
-       scene.add( mesh );
-     } );
-     
-     //Some light
-     var ambientLight = new THREE.AmbientLight(0xbbbbbb);
-     scene.add(ambientLight);
+      //A plane, with tiling texture
+      var texture = THREE.ImageUtils.loadTexture('grass.png');
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(5, 5);
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.LinearMipMapLinearFilter;
+      var plane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000),
+        new THREE.MeshLambertMaterial({
+          map: texture,
+          ambient: 0xbbbbbb
+        }));
+      plane.overdraw = true;
+      plane.rotation.x = -Math.PI / 2;
+      scene.add(plane);
 
-     //Camera control
-     var camControls = new THREE.PointerLockControls(camera);
-     scene.add(camControls.getObject());
-     
-     var render = function () {
-       requestAnimationFrame(render);
-       camControls.enabled=true;
-       camControls.isOnObject( false );
-       camControls.update();
+      //A js model exported from blender
+      var loader = new THREE.JSONLoader();
+      loader.load("blender/monkey.js", function(geometry) {
 
-       renderer.render(scene, camera);
-     };
+        mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+        mesh.scale.set(10, 10, 10);
+        mesh.position.y = 0;
+        mesh.position.x = 0;
+        scene.add(mesh);
+      });
 
-     function animate()
-     {
-       
-     }
-     render();
-     
-     function onWindowResize() {
+      //Some light
+      var ambientLight = new THREE.AmbientLight(0xbbbbbb);
+      scene.add(ambientLight);
 
-       camera.aspect = window.innerWidth / window.innerHeight;
-       camera.updateProjectionMatrix();
+      //Camera control
+      console.log('la');
+      var camControls = new THREE.PointerLockControls(camera);
+      scene.add(camControls.getObject());
 
-       renderer.setSize( window.innerWidth, window.innerHeight );
+      var render = function() {
+        requestAnimationFrame(render);
+        camControls.enabled = true;
+        camControls.isOnObject(false);
+        camControls.update();
 
-     }
-    </script>
-  </body>
+        renderer.render(scene, camera);
+      };
+      render();
+    };
+
+    function animate() {
+
+    }
+
+    function onWindowResize() {
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    window.onload = initScene;
+  </script>
+</body>
+
 </html>

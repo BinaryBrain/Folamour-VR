@@ -3,7 +3,7 @@ Folamour VR
 
 HackZürich Hackathon Project
 
-![Logo](logo/logo-4.png?raw=true)
+![Logo](logo/logo-4.jpg?raw=true)
 
 French version below.
 

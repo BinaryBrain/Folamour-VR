@@ -1,6 +1,8 @@
 Folamour VR
 ==========
 
+*The [presentation slide](slide.pdf?raw=true) is available [here](slide.pdf?raw=true).*
+
 HackZürich Hackathon Project
 
 ![Logo](logo/logo-4.jpg?raw=true)

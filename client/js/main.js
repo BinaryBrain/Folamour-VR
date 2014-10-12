@@ -102,11 +102,12 @@ function main(mode, id) {
     });*/
 
     loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
-      mesh.scale.set(5,5,5);
-      mesh.position.y = 20;
-      mesh.position.x = -20;
-      mesh.position.z = -50;
-      scene.add(mesh);
+	mesh.scale.set(5,5,5);
+	mesh.position.y = 20;
+	mesh.position.x = -20;
+	mesh.position.z = -50;
+	mesh.mass=0;
+	scene.add(mesh);
     });
 
     //Base de départ
@@ -126,6 +127,24 @@ function main(mode, id) {
       mesh.position.z = -1317;
       scene.add(mesh);
     });
+      //Ponts
+      loadPhysicalObject("bridge.js","wood.jpg",function(mesh){
+	  mesh.scale.set(10,5,10);
+	  mesh.position.y = 0;
+	  mesh.position.x = -425;
+	  mesh.position.z = -239;
+	  mesh.mass=0;
+	  scene.add(mesh);
+      });
+            loadPhysicalObject("bridge.js","wood.jpg",function(mesh){
+	  mesh.scale.set(20,5,10);
+	  mesh.position.y = 0;
+	  mesh.position.x = -321;
+	  mesh.position.z = -1010;
+	  mesh.mass=0;
+	  scene.add(mesh);
+      });
+
 
     loadMissile(function (missile) {
         missile.scale.set(10, 10, 10);
@@ -178,6 +197,7 @@ function main(mode, id) {
       ground_material[i].map.wrapS = ground_material[i].map.wrapT = THREE.RepeatWrapping;
       //ground_material.map.repeat.set(1, 1);
     }
+      ground_material[0]=0;
     
 
 /*      var xLen = map[0].length;

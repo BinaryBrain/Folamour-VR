@@ -9,8 +9,8 @@ var map = [
 var islands = [
 	{l: 400, h: 1, d: 1200, x: 80, y: -1, z: 80, tex: 1}, //W island
 	{l: 400, h: 1, d: 1200, x: -520, y: -1, z: 80, tex: 1}, //E island
-	{l: 200, h: 1, d: 80, x: -320, y: -1, z: -200, tex: 1}, //W-E bridge N
-	{l: 200, h: 1, d: 80, x: -320, y: -1, z: -960, tex: 1}, //W-E bridge S
+	{l: 200, h: 1, d: 80, x: -320, y: -1, z: -200, tex: 0}, //W-E bridge N
+	{l: 200, h: 1, d: 80, x: -320, y: -1, z: -960, tex: 0}, //W-E bridge S
 	{l: 80, h: 1, d: 200, x: -380, y: -1, z: -1040, tex: 1}, // S bridge
 	{l: 800, h: 1, d: 200, x: -20, y: -1, z: -1240, tex: 1} // S island
 ];

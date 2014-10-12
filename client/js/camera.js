@@ -62,6 +62,6 @@ function setSpeed(cameraHitbox,pressed,theta) {
         100*speed[2]/norm
     ));
 
-    //console.log(cameraHitbox.position);
+    console.log(cameraHitbox.position);
 }
 

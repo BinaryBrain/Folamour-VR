@@ -9,10 +9,25 @@ html, body {
 	height: 100%;
 }
 
-#oculus-status {
-	color: green;
+#oculus-status-wrapper {
+	position: absolute;
+	z-index: 1000;
 
-	&.error {
-		color: red;
+	right: 10px;
+	bottom: 10px;
+
+	color: white;
+
+	#oculus-status {
+		color: green;
+
+		&.error {
+			color: red;
+		}
 	}
+}
+
+audio {
+	position: absolute;
+	padding: 10px;
 }

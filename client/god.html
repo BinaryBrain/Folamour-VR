@@ -1,6 +1,7 @@
 <html>
-    <head>
+  <head>
     <title>HackZürich</title>
+    <meta charset="utf-8">
     <link rel="stylesheet/less" href="style/style.less">
      <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
      <script type="text/javascript" src="js/adapter/adapter.js"></script>
@@ -10,8 +11,7 @@
     </head>
     <body>
       <div id="content"></div>
-      <div id="oculus-status"></div>
-    </body>
+      <div id="oculus-status-wrapper">Oculus Status: <span id="oculus-status"></span></div>
     <script src="lib/less.min.js"></script>
     <script src="lib/three.min.js"></script>
     <script src="lib/OculusRiftEffect.js"></script>
@@ -35,4 +35,5 @@
       setCallbackOnMessage(main(true, 0));
     </script>
     <script type="text/javascript" src="js/oculus-handler.js"></script>
+  </body>
 </html>

@@ -106,6 +106,14 @@ function main(mode, id) {
     });*/
       createBarrels(scene);
 
+      loadPhysicalObject("dynamite.js","dynamite.jpg",function(mesh){
+	mesh.scale.set(2,2,2);
+	mesh.position.y = 3;
+	mesh.position.x = -25;
+	mesh.position.z = -50;
+	mesh.mass=0;
+	scene.add(mesh);
+    });
     //Base de départ
     loadPhysicalObject("flag-base.js","flag-base-green.jpg",function(mesh){
 	mesh.scale.set(8,8,8);
@@ -394,7 +402,7 @@ function main(mode, id) {
     scene.simulate();
     render();
 
-      function gameOver(callback)
+      function overlayScreen(callback,image)
       {
 	  if(!screen)
 	  {
@@ -403,7 +411,7 @@ function main(mode, id) {
 	      text2.style.position = 'absolute';
 	      text2.style.width = 100;
 	      text2.style.height = 100;
-	      text2.innerHTML = "<img src='/assets/textures/game-over.png'>";
+	      text2.innerHTML = "<img src='/assets/textures/"+image+"'>";
 	      text2.style.top = 60 + 'px';
 	      text2.style.left = 160 + 'px';
 	      document.body.appendChild(text2);
@@ -417,6 +425,10 @@ function main(mode, id) {
 		  screen=false;
 	      },3000);
 	  }
+      }
+      function gameOver(callback)
+      {
+	  overlayScreen(callback,"game-over.png");
       }
       
     //Mouse movements

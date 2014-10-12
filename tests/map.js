@@ -58,7 +58,7 @@ function loadSkybox(cb)
 	});
 }
 function loadMissile(cb) {
-	loadPhysicalObject('missile.js', 'missile.jpg', function (mesh) {
+	loadObject('missile.js', 'missile.jpg', function (mesh) {
 		if(cb) {
 			cb(mesh);
 		}

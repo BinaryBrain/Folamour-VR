@@ -116,7 +116,7 @@ function main(mode, id) {
     //Base de fin
     loadObject("flag-base.js","flag-base-red.jpg",function(mesh){
       mesh.scale.set(8,8,8);
-      mesh.position.y = 8;
+      mesh.position.y = 5;
       mesh.position.x = -726;
 	mesh.position.z = -1317;
       scene.add(mesh);

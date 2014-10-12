@@ -3,6 +3,8 @@
     var camera;
     var cameraHitbox;
     var otherPlayers = {};
+    var missileSpeed;
+    var character;
 
     //Compatibility
     if (navigator.mozGetUserMedia) var nav = "moz";
@@ -11,7 +13,7 @@
     //Init scene
     initScene = function() {
       //Camera, renderer
-      var theta = 0;
+      var theta = -1*Math.PI;
       var phi = 0;
       var pressed = {};
 
@@ -38,6 +40,7 @@
             chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
           }
         });
+        missileSpeed = new THREE.Vector3(0, 0, 0);
         effect.setSize(window.innerWidth, window.innerHeight);
       }
 
@@ -67,6 +70,79 @@
         }
       );
 
+      loadSkybox(function (mesh) {
+        scene.add(mesh);
+      });
+
+      loadCharacter(function(mesh){
+        mesh.position.y = 7.5;
+        mesh.position.x = 25;
+        mesh.position.z=	10;
+        scene.add(mesh);
+        character=mesh;
+      });
+      
+      loadCharacter(function(mesh){
+        mesh.position.y = 7.5;
+        mesh.position.x = 35;
+        mesh.position.z=	10;
+        scene.add(mesh);
+        character=mesh;
+      });
+      
+      loadCharacter(function(mesh){
+        mesh.position.y = 7.5;
+        mesh.position.x = 20;
+        mesh.position.z=	10;
+        scene.add(mesh);
+        character=mesh;
+      });
+
+      loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
+        mesh.scale.set(5,5,5);
+        mesh.position.y = 20;
+        mesh.position.x = -20;
+        mesh.position.z = -50;
+        scene.add(mesh);
+      });
+
+      //Base de départ
+      loadObject("flag-base.js","flag-base-green.jpg",function(mesh){
+        mesh.scale.set(8,8,8);
+        mesh.position.y = 5;
+        mesh.position.x = 40;
+        mesh.position.z = 40;
+        scene.add(mesh);
+      });
+      
+      //Base de fin
+      loadObject("flag-base.js","flag-base-red.jpg",function(mesh){
+        mesh.scale.set(8,8,8);
+        mesh.position.y = 5;
+        mesh.position.x = 40;
+        mesh.position.z = -100;
+        scene.add(mesh);
+      });
+
+      loadMissile(function (missile) {
+        if(isOculus) {
+          missile.scale.set(10, 10, 10);
+          missile.position.x = 0;
+          missile.position.y = -20;
+          missile.position.z = -25;
+
+          missile.quaternion.setFromEuler(new THREE.Euler(Math.PI/8, -Math.PI/2, 0, 'XYZ' ));
+          missile.quaternion.normalize();
+
+          var axis = new THREE.Vector3(1,0,0);
+
+          camera.add(missile);
+        } else {
+          // TODO Add missile to Folamour
+          // scene.add(missile);
+        }
+      })
+ 
       //A plane, with tiling texture
       /*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
@@ -169,8 +245,7 @@
 
       //Some light
       var ambientLight = new THREE.AmbientLight(0xbbbbbb);
-scene.add(ambientLight);
-      //Skybox
+      scene.add(ambientLight);
 
       //Camera
       var ret = initCamera(scene);
@@ -185,21 +260,11 @@ scene.add(ambientLight);
 
       if(isOculus) {
         camera.position.y += 100
-
-        // TODO Set camera speed forward (like a missile)
       }
-
-      /*
-      camera.lookAt(new THREE.Vector3(
-        100 * Math.sin(theta),
-        100 * Math.tan(phi),
-        100 * Math.cos(theta)));
-      */
-
+      
       //Render function
       var render = function() {
         requestAnimationFrame(render);
-        setSpeed(cameraHitbox, pressed, theta);
         
         var send = {};
         console.log(id);
@@ -213,8 +278,14 @@ scene.add(ambientLight);
         
         sendInfo(JSON.stringify(send));
         if(isOculus) {
+          camera.position.add(missileSpeed);
           effect.render( scene, camera );
         } else {
+          setSpeed(cameraHitbox, pressed, theta);
+          //if (character){
+            //character.position.x=cameraHitbox.position.x;
+            //character.position.z=cameraHitbox.position.z;
+          //}
           renderer.render(scene, camera);
         }
       };
@@ -226,8 +297,6 @@ scene.add(ambientLight);
       //Mouse movements
       function onDocumentMouseMove(event) {
         if(!isOculus) {
-          oldX = event.clientX;
-          oldY = event.clientY;
           //Angles
           theta -= event[nav + 'MovementX'] / window.innerWidth * 10;
           phi -= event[nav + 'MovementY'] / window.innerWidth * 10;
@@ -304,11 +373,16 @@ scene.add(ambientLight);
     }
 
     function onOculusOrientationUpdate(q) {
-      if(isOculus && camera) {
+      if (isOculus && camera) {
         camera.quaternion._x = q.x;
         camera.quaternion._y = q.y;
         camera.quaternion._z = q.z;
         camera.quaternion._w = q.w;
+        //camera.quaternion.multiplyVector3(THREE.Vector3(1,0,0),-1*missileSpeed);
+        missileSpeed = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
+        missileSpeed.multiplyScalar(-1);
+        //missileSpeed=new THREE.Vector3(-10,0,0);
+        //missileSpeed=THREE.Vector3(0,0,0);
       } else {
         console.warn("Camera is still not defined.")
       }

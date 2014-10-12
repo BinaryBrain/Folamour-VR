@@ -8,8 +8,9 @@
      <audio id="audio" autoplay="autoplay" controls="controls"></audio>
      <audio id="audio2" autoplay="autoplay" controls="controls"></audio>
     </head>
-    <body>    
-    <div id="content"></div>
+    <body>
+      <div id="content"></div>
+      <div id="oculus-status"></div>
     </body>
     <script src="lib/less.min.js"></script>
     <script src="lib/three.min.js"></script>
@@ -33,4 +34,5 @@
       init();
       setCallbackOnMessage(main(true, 0));
     </script>
+    <script type="text/javascript" src="js/oculus-handler.js"></script>
 </html>

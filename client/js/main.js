@@ -310,6 +310,11 @@ function main(mode, id) {
           characters.missile.position.y = otherPlayers.p0.p.y
           characters.missile.position.x = otherPlayers.p0.p.x
           characters.missile.position.z = otherPlayers.p0.p.z
+		  characters.missile.quaternion._x = otherPlayers.p0.q._x
+		  characters.missile.quaternion._y = otherPlayers.p0.q._y+Math.PI/2;
+  		  characters.missile.quaternion._z = otherPlayers.p0.q._z
+  		  characters.missile.quaternion._w = otherPlayers.p0.q._w
+		  characters.missile.quaternion.normalize();
           var diff = camera.position.distanceTo(otherPlayers.p0.p);
           if(diff < 250) {
 			gameOver(function(){
@@ -338,7 +343,7 @@ function main(mode, id) {
       var send = {};
 	//console.log(id);
       if(id === 0) {
-        send.pers = {id: id, p: camera.position, v: missileSpeed};
+        send.pers = {id: id, p: camera.position, v: missileSpeed, q: camera.quaternion};
       } else {
         send.pers = {id: id, p: cameraHitbox.position, v: cameraHitbox.getLinearVelocity()};
       }

@@ -392,10 +392,8 @@ function onOculusOrientationUpdate(q) {
     camera.quaternion._z = q.z;
     camera.quaternion._w = q.w;
     //camera.quaternion.multiplyVector3(THREE.Vector3(1,0,0),-1*missileSpeed);
-    missileSpeed = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
+    missileSpeed = new THREE.Vector3(0, 0, 3).applyQuaternion(camera.quaternion);
     missileSpeed.multiplyScalar(-1);
-    //missileSpeed=new THREE.Vector3(-10,0,0);
-    //missileSpeed=THREE.Vector3(0,0,0);
   } else {
     console.warn("Camera is still not defined.")
   }

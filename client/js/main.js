@@ -72,26 +72,26 @@ function main(mode, id) {
       scene.add(mesh);
     });
 
-    loadCharacter(function(mesh){
+    if(id !== 1) {
+      loadCharacter(function(mesh){
       mesh.position.y = 7.5;
       mesh.position.x = 25;
       mesh.position.z=	10;
       scene.add(mesh);
-      if(id === 1) {
-        character.char1=mesh;
-      }else{
-        character.char1=mesh;
-      }
+      characters.char1=mesh;
     });
-    
-    loadCharacter(function(mesh){
+    }
+
+    if(id !== 2) {
+      loadCharacter(function(mesh){
       mesh.position.y = 7.5;
       mesh.position.x = 35;
       mesh.position.z=	10;
       scene.add(mesh);
-      character.char2=mesh;
+      characters  .char2=mesh;
     });
-    
+    }
+
     /*loadCharacter(function(mesh){
       mesh.position.y = 7.5;
       mesh.position.x = 20;
@@ -256,9 +256,9 @@ function main(mode, id) {
     cameraHitbox = ret.cameraHitbox;
 
     camera.lookAt(new THREE.Vector3(
-      cameraHitbox.position.x + 10000 * Math.sin(theta),
-      cameraHitbox.position.y + 10000 * Math.tan(phi),
-      cameraHitbox.position.z + 10000 * Math.cos(theta)));
+    cameraHitbox.position.x + 10000 * Math.sin(theta),
+    cameraHitbox.position.y + 10000 * Math.tan(phi),
+    cameraHitbox.position.z + 10000 * Math.cos(theta)));
     camera.updateMatrix();
 
     if(isOculus) {
@@ -267,24 +267,55 @@ function main(mode, id) {
         camera.position.z = -1317;
         camera.quaternion.setFromEuler(new THREE.Euler(Math.PI, -Math.PI/1.5, 0, 'XYZ' ));
         camera.quaternion.normalize();
+    }else{
+        cameraHitbox.position.y = 7.5;
+        cameraHitbox.position.x = 25;
+        cameraHitbox.position.z=	10;
     }
     
     //Render function
     var render = function() {
       requestAnimationFrame(render);
       
-      // TODO draw people from other people that i != you with p and v
+      
+      if(id !== 0){
+        if(otherPlayers.p0) {
+          characters.missile.position.y = otherPlayers.p0.p.y
+          characters.missile.position.x = otherPlayers.p0.p.x
+          characters.missile.position.z = otherPlayers.p0.p.z
+        }
+      }
+
+      if(id !== 1){
+        if(otherPlayers.p1) {
+          characters.char1.position.y = otherPlayers.p1.p.y
+          characters.char1.position.x = otherPlayers.p1.p.x
+          characters.char1.position.z = otherPlayers.p1.p.z
+        }
+      }
+      if(id !== 2){
+        if(otherPlayers.p2) {
+          characters.char2.position.y = otherPlayers.p2.p.y
+          characters.char2.position.x = otherPlayers.p2.p.x
+          characters.char2.position.z = otherPlayers.p2.p.z
+        }
+      }
       
       var send = {};
 	//console.log(id);
-      send.pers = {id: id, p: cameraHitbox.position, v: cameraHitbox.getLinearVelocity()};
+      if(id === 0) {
+        send.pers = {id: id, p: camera.position, v: missileSpeed};
+      } else {
+        send.pers = {id: id, p: cameraHitbox.position, v: cameraHitbox.getLinearVelocity()};
+      }
+      
       if (otherPlayers.p1) {
         send.p1 = otherPlayers.p1;
       }
       if (otherPlayers.p2) {
         send.p2 = otherPlayers.p2;
       }
-      
+
       sendInfo(JSON.stringify(send));
       if(isOculus) {
         camera.position.add(missileSpeed);
@@ -389,8 +420,8 @@ function main(mode, id) {
   return function(event){
     var ret = JSON.parse(event.data);
     otherPlayers['p'+ret.pers.id] = ret.pers;
-    if (ret.p1) otherPlayers.p1 = ret.p1;
-    if (ret.p2) otherPlayers.p2 = ret.p2;
+    if (ret.p1 && ret.pers.id !== 1) otherPlayers.p1 = ret.p1;
+    if (ret.p2 && ret.pers.id !== 2) otherPlayers.p2 = ret.p2;
   };
 }
 

@@ -19,19 +19,19 @@ var loader = new THREE.JSONLoader();
 
 function loadObject(model,texture,cb)
 {
-    	loader.load(modelPath+model, function (geometry) {
-		var mesh = new THREE.Mesh(
-			geometry,
-			new THREE.MeshLambertMaterial({
-				map: THREE.ImageUtils.loadTexture(texturePath+texture),
-				ambient: 0xffffff
-			})
-		);
+    loader.load(modelPath+model, function (geometry) {
+	var mesh = new THREE.Mesh(
+	    geometry,
+	    new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(texturePath+texture),
+		ambient: 0xffffff
+	    })
+	);
 
-		if(cb) {
-			cb(mesh);
-		}
-	});
+	if(cb) {
+	    cb(mesh);
+	}
+    });
 }
 function loadPhysicalObject(model, texture, cb) {
 	loader.load(modelPath+model, function (geometry) {
@@ -68,8 +68,10 @@ function loadCharacter(cb) {
 	loadObject('character.js', 'robot.jpg', function (mesh) {
 	    if(cb) {
 		mesh.scale.set(5, 5, 5);
-		mesh.position.y = 2;
+		mesh.position.y = 3;
 		mesh.position.x = 0;
+		mesh.position.z=-20;
+		mesh.rotation.y=Math.PI;
 		cb(mesh);
 		}
 	});

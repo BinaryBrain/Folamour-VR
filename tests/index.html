@@ -26,10 +26,11 @@
 	<script type="text/javascript" src="createBox.js"></script>
 	<script type="text/javascript" src="map.js"></script>
 	<script>
-		var isOculus = false;
-		var camera;
-		var cameraHitbox;
-		var missileSpeed;
+	 var isOculus = false;
+	 var camera;
+	 var cameraHitbox;
+	 var missileSpeed;
+	 var character;
 
 		//Compatibility
 		if (navigator.mozGetUserMedia) var nav = "moz";
@@ -38,7 +39,7 @@
 		//Init scene
 		initScene = function() {
 			//Camera, renderer
-			var theta = 0;
+			var theta = -1*Math.PI;
 			var phi = 0;
 			var pressed = {};
 
@@ -100,15 +101,24 @@
 			});
 		  loadCharacter(function(mesh){
 		    scene.add(mesh);
+		    character=mesh;
 		  });
 
-			loadMissile(function (missile) {
-				missile.scale.set(10, 10, 10);
-				missile.position.y = 40;
-				missile.position.x = 0;
-				missile.position.z = -50;
-				scene.add(missile);
-			})
+		  loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
+		    mesh.scale.set(5,5,5);
+		    mesh.position.y = 20;
+		    mesh.position.x = -20;
+		    mesh.position.z = -50;
+		    scene.add(mesh);
+		  });
+
+		  loadMissile(function (missile) {
+		    missile.scale.set(10, 10, 10);
+		    missile.position.y = 40;
+		    missile.position.x = 0;
+		    missile.position.z = -50;
+		    scene.add(missile);
+		  });
 
 			//A plane, with tiling texture
 			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');
@@ -243,13 +253,17 @@
 			//Render function
 			var render = function() {
 				requestAnimationFrame(render);
-
 				if (isOculus) {
 					camera.position.add(missileSpeed);
 					effect.render(scene, camera);
 				} else {
-					setSpeed(cameraHitbox, pressed, theta);
-					renderer.render(scene, camera);
+				  setSpeed(cameraHitbox, pressed, theta);
+				  
+				  if (character){
+				    //character.position.x=cameraHitbox.position.x;
+				    //character.position.z=cameraHitbox.position.z;
+				  }
+				  renderer.render(scene, camera);
 				}
 			};
 
@@ -258,7 +272,7 @@
 			render();
 
 			//Mouse movements
-			function onDocumentMouseMove(event) {
+		  function onDocumentMouseMove(event) {
 				if (!isOculus) {
 					oldX = event.clientX;
 					oldY = event.clientY;

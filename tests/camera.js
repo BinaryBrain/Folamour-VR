@@ -7,7 +7,7 @@ function initCamera(scene)
         0,
         50 // mass
     );
-    cameraHitbox.position.set(0,57,0);
+    cameraHitbox.position.set(0,10,0);
     cameraHitbox.add(camera);
     scene.add(cameraHitbox);
     //Constraints

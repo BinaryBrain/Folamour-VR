@@ -24,8 +24,8 @@ window.addEventListener("load", function(){
 })
 
 function sendInfo(data) {
-  channel.send(data);
-  channel2.send(data);
+  if (channel.readyState == 'open') channel.send(data);
+  if (channel2.readyState == 'open') channel2.send(data);
 }
 
 function init() {
@@ -233,6 +233,7 @@ function setCallbackOnMessage(fun) {
 }
 
 function onMessage(event) {
+  //log(event);
   callbackOnMessage(event);
 }
 

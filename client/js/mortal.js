@@ -19,6 +19,10 @@ window.addEventListener("load", function(){
   audioElement = document.querySelector("#audio");
 })
 
+function sendInfo(data) {
+  if (channel && channel.readyState == 'open') channel.send(data);
+}
+
 function init(mod) {
   log("Initializing")
   modifier = mod;
@@ -124,6 +128,7 @@ function setCallbackOnMessage(fun) {
 }
 
 function onMessage(event) {
+  //log(event);
   callbackOnMessage(event);
 }
 

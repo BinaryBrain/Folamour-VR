@@ -1,8 +1,8 @@
- var isOculus = false;
-
-  function main() {
+  function main(mode, id) {
+    isOculus = mode;
     var camera;
     var cameraHitbox;
+    var otherPlayers = {};
 
     //Compatibility
     if (navigator.mozGetUserMedia) var nav = "moz";
@@ -200,7 +200,18 @@ scene.add(ambientLight);
       var render = function() {
         requestAnimationFrame(render);
         setSpeed(cameraHitbox, pressed, theta);
-
+        
+        var send = {};
+        console.log(id);
+        send.pers = {id: id, p: cameraHitbox.position, v: cameraHitbox.getLinearVelocity()};
+        if (otherPlayers.p1) {
+          send.p1 = otherPlayers.p1;
+        }
+        if (otherPlayers.p2) {
+          send.p2 = otherPlayers.p2;
+        }
+        
+        sendInfo(JSON.stringify(send));
         if(isOculus) {
           effect.render( scene, camera );
         } else {
@@ -306,9 +317,13 @@ scene.add(ambientLight);
     //Initialize scene
     window.onload = initScene;
 
-    return function(){
-      
-      
+    //callback called when receiving
+    return function(event){
+      var ret = JSON.parse(event.data);
+      otherPlayers['p'+ret.pers.id] = ret.pers;
+      if (ret.p1) otherPlayers.p1 = ret.p1;
+      if (ret.p2) otherPlayers.p2 = ret.p2;
+      console.log(otherPlayers);
     };
   }
   //Helper functions

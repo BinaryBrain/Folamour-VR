@@ -302,6 +302,13 @@ function main(mode, id) {
           characters.missile.position.y = otherPlayers.p0.p.y
           characters.missile.position.x = otherPlayers.p0.p.x
           characters.missile.position.z = otherPlayers.p0.p.z
+          var diff = camera.position.distanceTo(otherPlayers.p0.p);
+          if(diff < 250) {
+			gameOver(function(){
+				cameraHitbox.position.y = 7.5;
+				cameraHitbox.position.x = 35;
+				cameraHitbox.position.z=	10;});
+          }
         }
       }
 
@@ -339,25 +346,6 @@ function main(mode, id) {
       if(isOculus) {
         camera.position.add(missileSpeed);
 
-        //var crashed = false;
-        // Collision avec P1
-        if(typeof otherPlayers.p1 !== 'undefined') {
-          var diff = camera.position.distanceTo(otherPlayers.p1);
-          if(diff > 5) {
-              //crashed = true;
-	      gameOver(function(){camera.position.y = 300;});
-          }
-        }
-
-        // Collision avec P2
-        if(typeof otherPlayers.p2 !== 'undefined') {
-          var diff = camera.position.distanceTo(otherPlayers.p2);
-          if(diff > 5) {
-              //crashed = true;
-	      gameOver(function(){camera.position.y = 300;});
-          }
-        }
-
         // Altitude trop basse
         if(camera.position.y < 0) {
             //crashed = true;
@@ -385,7 +373,7 @@ function main(mode, id) {
 		    //camera.__dirtyPosition=true;
 		});
 	    }
-
+		
         renderer.render(scene, camera);
       }
     };

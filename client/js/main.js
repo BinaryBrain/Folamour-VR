@@ -1,9 +1,11 @@
 var missile_mesh;
 function main(mode, id) {
-  isOculus = mode;
-  var cameraHitbox;
-  var otherPlayers = {};
-  var characters = {};
+
+    isOculus = mode;
+    var cameraHitbox;
+    var otherPlayers = {};
+    var characters = {};
+    var screen=false;
 
   //Compatibility
   if (navigator.mozGetUserMedia) var nav = "moz";
@@ -16,7 +18,8 @@ function main(mode, id) {
     var phi = 0;
     var pressed = {};
     jumpDisabled = false;
-
+    var pressed = {};
+      
     //Setup renderer
     var renderer = new THREE.WebGLRenderer({
       antialias: true
@@ -101,22 +104,16 @@ function main(mode, id) {
       scene.add(mesh);
       character=mesh;
     });*/
-
-    loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
-      mesh.scale.set(5,5,5);
-      mesh.position.y = 20;
-      mesh.position.x = -20;
-      mesh.position.z = -50;
-      scene.add(mesh);
-    });
+      createBarrels(scene);
 
     //Base de départ
-    loadObject("flag-base.js","flag-base-green.jpg",function(mesh){
-      mesh.scale.set(8,8,8);
-      mesh.position.y = 5;
-      mesh.position.x = 40;
-      mesh.position.z = 40;
-      scene.add(mesh);
+    loadPhysicalObject("flag-base.js","flag-base-green.jpg",function(mesh){
+	mesh.scale.set(8,8,8);
+	mesh.position.y = 5;
+	mesh.position.x = 40;
+	mesh.position.z = 40;
+	mesh.mass=0;
+	scene.add(mesh);
     });
     
     //Base de fin
@@ -127,6 +124,24 @@ function main(mode, id) {
       mesh.position.z = -1317;
       scene.add(mesh);
     });
+      //Ponts
+      loadObject("bridge.js","wood.jpg",function(mesh){
+	  mesh.scale.set(10,5,10);
+	  mesh.position.y = 0;
+	  mesh.position.x = -425;
+	  mesh.position.z = -239;
+	  mesh.mass=0;
+	  scene.add(mesh);
+      });
+            loadObject("bridge.js","wood.jpg",function(mesh){
+	  mesh.scale.set(20,5,10);
+	  mesh.position.y = 0;
+	  mesh.position.x = -321;
+	  mesh.position.z = -1010;
+	  mesh.mass=0;
+	  scene.add(mesh);
+      });
+
 
     loadMissile(function (missile) {
         missile.scale.set(10, 10, 10);
@@ -179,7 +194,8 @@ function main(mode, id) {
       ground_material[i].map.wrapS = ground_material[i].map.wrapT = THREE.RepeatWrapping;
       //ground_material.map.repeat.set(1, 1);
     }
-    
+      //ground_material[0]=new THREE.MeshLambertMaterial({color: 0x0000ff, transparent: true, opacity: 0.5});
+      ground_material[0]=0;
 
 /*      var xLen = map[0].length;
     var yLen = map[0][0].length;
@@ -323,12 +339,13 @@ function main(mode, id) {
       if(isOculus) {
         camera.position.add(missileSpeed);
 
-        var crashed = false;
+        //var crashed = false;
         // Collision avec P1
         if(typeof otherPlayers.p1 !== 'undefined') {
           var diff = camera.position.distanceTo(otherPlayers.p1);
           if(diff > 5) {
-            crashed = true;
+              //crashed = true;
+	      gameOver(function(){camera.position.y = 300;});
           }
         }
 
@@ -336,28 +353,39 @@ function main(mode, id) {
         if(typeof otherPlayers.p2 !== 'undefined') {
           var diff = camera.position.distanceTo(otherPlayers.p2);
           if(diff > 5) {
-            crashed = true;
+              //crashed = true;
+	      gameOver(function(){camera.position.y = 300;});
           }
         }
 
         // Altitude trop basse
         if(camera.position.y < 0) {
-          crashed = true;
+            //crashed = true;
+	    gameOver(function(){camera.position.y = 300;});
         }
 
-        if(crashed) {
-          setTimeout(function () {
-            camera.position.y = 300;
-          }, 5000);
-        }
+       // if(crashed) {
+        //}
 
         effect.render( scene, camera );
       } else {
         setSpeed(cameraHitbox, pressed, theta);
         //if (character){
           //character.position.x=cameraHitbox.position.x;
-          //character.position.z=cameraHitbox.position.z;
-        //}
+            //character.position.z=cameraHitbox.position.z;
+	    //Vérifie si le joueur n'est pas mort
+	    if (cameraHitbox.position.y<0)
+	    {
+		cameraHitbox.setLinearVelocity(new THREE.Vector3(0,0,0));
+
+		gameOver(function(){
+		    cameraHitbox.position.set(5,20,0);
+		    cameraHitbox.__dirtyPosition=true;
+		    //camera.position.set(5,20,0);
+		    //camera.__dirtyPosition=true;
+		});
+	    }
+
         renderer.render(scene, camera);
       }
     };
@@ -366,6 +394,31 @@ function main(mode, id) {
     scene.simulate();
     render();
 
+      function gameOver(callback)
+      {
+	  if(!screen)
+	  {
+	      screen=true;
+	      var text2 = document.createElement('div');
+	      text2.style.position = 'absolute';
+	      text2.style.width = 100;
+	      text2.style.height = 100;
+	      text2.innerHTML = "<img src='/assets/textures/game-over.png'>";
+	      text2.style.top = 60 + 'px';
+	      text2.style.left = 160 + 'px';
+	      document.body.appendChild(text2);
+
+	      setTimeout(function(){
+		  text2.remove();
+		  if(callback)
+		  {
+		      callback();
+		  }
+		  screen=false;
+	      },3000);
+	  }
+      }
+      
     //Mouse movements
     function onDocumentMouseMove(event) {
       if(!isOculus) {

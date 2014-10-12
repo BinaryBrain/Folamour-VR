@@ -3,18 +3,18 @@ function initCamera(scene)
 {
     var camera=new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000000);
     var cameraHitbox = new Physijs.BoxMesh(
-        new THREE.CylinderGeometry(2, 2, 12),
+        new THREE.CylinderGeometry(5, 2, 12),
         0,
         50 // mass
     );
-    cameraHitbox.position.set(0,10,0);
+    cameraHitbox.position.set(0,20,0);
     cameraHitbox.add(camera);
     scene.add(cameraHitbox);
     //Constraints
     var constraint = new Physijs.DOFConstraint(
         cameraHitbox, // First object to be constrained
         0,
-        new THREE.Vector3( 0, 10, 0 ) // point in the scene to apply the constraint
+        new THREE.Vector3(0, 20, 0) // point in the scene to apply the constraint
     );
     scene.addConstraint(constraint);
     constraint.setLinearLowerLimit( new THREE.Vector3( -1e30, -1e30, -1e30) ); // sets the lower end of the linear movement along the x, y, and z axes.
@@ -66,6 +66,6 @@ function setSpeed(cameraHitbox,pressed,theta) {
         100*speed[2]/norm
     ));
 
-    //console.log(cameraHitbox.position);
+    //console.log(cameraHitbox.position.y);
 }
 

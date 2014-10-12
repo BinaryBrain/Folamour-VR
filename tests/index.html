@@ -100,6 +100,23 @@
 				scene.add(mesh);
 			});
 		  loadCharacter(function(mesh){
+		    mesh.position.y = 7.5;
+		    mesh.position.x = 25;
+		    mesh.position.z=  10;
+		    scene.add(mesh);
+		    character=mesh;
+		  });
+		  loadCharacter(function(mesh){
+		    mesh.position.y = 7.5;
+		    mesh.position.x = 35;
+		    mesh.position.z=  10;
+		    scene.add(mesh);
+		    character=mesh;
+		  });
+		  loadCharacter(function(mesh){
+		    mesh.position.y = 7.5;
+		    mesh.position.x = 20;
+		    mesh.position.z=  10;
 		    scene.add(mesh);
 		    character=mesh;
 		  });
@@ -112,13 +129,30 @@
 		    scene.add(mesh);
 		  });
 
-		  loadMissile(function (missile) {
+		  //Base de départ
+		   loadObject("flag-base.js","flag-base-green.jpg",function(mesh){
+		    mesh.scale.set(8,8,8);
+		    mesh.position.y = 5;
+		    mesh.position.x = 40;
+		    mesh.position.z = 40;
+		    scene.add(mesh);
+		   });
+		  //Base de fin
+		   loadObject("flag-base.js","flag-base-red.jpg",function(mesh){
+		    mesh.scale.set(8,8,8);
+		    mesh.position.y = 5;
+		    mesh.position.x = 40;
+		    mesh.position.z = -100;
+		    scene.add(mesh);
+		  });
+
+		  /*loadMissile(function (missile) {
 		    missile.scale.set(10, 10, 10);
 		    missile.position.y = 40;
 		    missile.position.x = 0;
 		    missile.position.z = -50;
 		    scene.add(missile);
-		  });
+		  });*/
 
 			//A plane, with tiling texture
 			/*var texture = THREE.ImageUtils.loadTexture('grass.b.png');

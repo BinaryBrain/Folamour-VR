@@ -68,9 +68,6 @@ function loadCharacter(cb) {
 	loadObject('character.js', 'robot.jpg', function (mesh) {
 	    if(cb) {
 		mesh.scale.set(5, 5, 5);
-		mesh.position.y = 3;
-		mesh.position.x = 0;
-		mesh.position.z=-20;
 		mesh.rotation.y=Math.PI;
 		cb(mesh);
 		}

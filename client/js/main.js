@@ -116,9 +116,9 @@ function main(mode, id) {
     //Base de fin
     loadObject("flag-base.js","flag-base-red.jpg",function(mesh){
       mesh.scale.set(8,8,8);
-      mesh.position.y = 5;
-      mesh.position.x = 40;
-      mesh.position.z = -100;
+      mesh.position.y = 8;
+      mesh.position.x = -726;
+	mesh.position.z = -1317;
       scene.add(mesh);
     });
 
@@ -267,7 +267,7 @@ function main(mode, id) {
       // TODO draw people from other people that i != you with p and v
       
       var send = {};
-      console.log(id);
+	//console.log(id);
       send.pers = {id: id, p: cameraHitbox.position, v: cameraHitbox.getLinearVelocity()};
       if (otherPlayers.p1) {
         send.p1 = otherPlayers.p1;

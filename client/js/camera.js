@@ -61,4 +61,7 @@ function setSpeed(cameraHitbox,pressed,theta) {
         speed[1] + cameraHitbox.getLinearVelocity().y,
         100*speed[2]/norm
     ));
+
+    //console.log(cameraHitbox.position);
 }
+

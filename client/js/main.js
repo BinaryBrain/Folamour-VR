@@ -319,6 +319,35 @@ function main(mode, id) {
       sendInfo(JSON.stringify(send));
       if(isOculus) {
         camera.position.add(missileSpeed);
+
+        var crashed = false;
+        // Collision avec P1
+        if(typeof otherPlayers.p1 !== 'undefined') {
+          var diff = camera.position.distanceTo(otherPlayers.p1);
+          if(diff > 5) {
+            crashed = true;
+          }
+        }
+
+        // Collision avec P2
+        if(typeof otherPlayers.p2 !== 'undefined') {
+          var diff = camera.position.distanceTo(otherPlayers.p2);
+          if(diff > 5) {
+            crashed = true;
+          }
+        }
+
+        // Altitude trop basse
+        if(camera.position.y < 0) {
+          crashed = true;
+        }
+
+        if(crashed) {
+          setTimeout(function () {
+            camera.position.y = 300;
+          }, 5000);
+        }
+
         effect.render( scene, camera );
       } else {
         setSpeed(cameraHitbox, pressed, theta);

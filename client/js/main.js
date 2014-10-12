@@ -373,8 +373,9 @@ function main(mode, id) {
         setSpeed(cameraHitbox, pressed, theta);
         //if (character){
           //character.position.x=cameraHitbox.position.x;
-            //character.position.z=cameraHitbox.position.z;
-	    //Vérifie si le joueur n'est pas mort
+          //character.position.z=cameraHitbox.position.z;
+	  
+	    //Chute
 	    if (cameraHitbox.position.y<0)
 	    {
 		cameraHitbox.setLinearVelocity(new THREE.Vector3(0,0,0));
@@ -382,11 +383,22 @@ function main(mode, id) {
 		gameOver(function(){
 		    cameraHitbox.position.set(5,20,0);
 		    cameraHitbox.__dirtyPosition=true;
-		    //camera.position.set(5,20,0);
-		    //camera.__dirtyPosition=true;
 		});
 	    }
+<<<<<<< HEAD
 		
+=======
+	  //Victoire
+	  var diff = cameraHitbox.position.distanceTo(new THREE.Vector3(-726,5,-1317));
+	  if (diff<40)
+	  {	     
+	      overlayScreen(function(){
+		  cameraHitbox.position.set(5,20,0);
+		  cameraHitbox.__dirtyPosition=true;
+	      }, "victory.png",5);
+	  }
+
+>>>>>>> Victory
         renderer.render(scene, camera);
       }
     };
@@ -395,7 +407,7 @@ function main(mode, id) {
     scene.simulate();
     render();
 
-      function overlayScreen(callback,image)
+      function overlayScreen(callback,image,duration)
       {
 	  if(!screen)
 	  {
@@ -416,12 +428,12 @@ function main(mode, id) {
 		      callback();
 		  }
 		  screen=false;
-	      },3000);
+	      },duration*1000);
 	  }
       }
       function gameOver(callback)
       {
-	  overlayScreen(callback,"game-over.png");
+	  overlayScreen(callback,"game-over.png",3);
       }
       
     //Mouse movements

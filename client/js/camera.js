@@ -50,8 +50,12 @@ function setSpeed(cameraHitbox,pressed,theta) {
     }
 
     if (pressed.jump) {
-        if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1) {
+        console.log(jumpDisabled);
+        if (Math.abs(cameraHitbox.getLinearVelocity().y) < 0.1 && !jumpDisabled) {
+            // we jump and we set a condition to avoid jump spamming
             speed[1]+=100;
+            jumpDisabled = true;
+            setTimeout(function(){jumpDisabled = false;}, 500);
         }
     }
     

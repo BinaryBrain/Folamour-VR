@@ -15,6 +15,7 @@ function main(mode, id) {
     var theta = -1*Math.PI;
     var phi = 0;
     var pressed = {};
+    jumpDisabled = false;
 
     //Setup renderer
     var renderer = new THREE.WebGLRenderer({

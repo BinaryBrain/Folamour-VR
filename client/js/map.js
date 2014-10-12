@@ -77,21 +77,25 @@ function createBarrels(scene)
 {
     barrels=[{obj:"barrel.js",tex:"barrel.jpg"},{obj:"barrel2.js",tex:"barrel2.jpg"}];
 
-    /*for (var x = 20; x<80; x++) {
-	for (var z = 20; z<1440; z++) {
-	    if(Math.floor((Math.random() * 100) + 1)==1)
-	    {*/
-		loadObject("barrel.js","barrel.jpg",function(mesh){
-		    mesh.scale.set(3,3,3);
+    //for (var x = 20; x<80; x++) {
+    //for (var z = 20; z<1440; z++) {
+//	    if(Math.floor((Math.random() * 100) + 1)==1)
+    //{
+	loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
+		   mesh.scale.set(3,3,3);
 		    mesh.position.y = 2;
-		    mesh.position.x = -20;
-		    mesh.position.z = -50;
-		    //mesh.mass=0;
+		    mesh.position.x = -20; //-20
+		    mesh.position.z = -50; //-50
+		    mesh.mass=0;
 		    scene.add(mesh);
+		});
+	//}
+	//}
+    //}
 	/*	});	
 	    }
 	}*/
-		});
+		//});
     
 
 }

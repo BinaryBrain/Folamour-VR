@@ -385,9 +385,6 @@ function main(mode, id) {
 		    cameraHitbox.__dirtyPosition=true;
 		});
 	    }
-<<<<<<< HEAD
-		
-=======
 	  //Victoire
 	  var diff = cameraHitbox.position.distanceTo(new THREE.Vector3(-726,5,-1317));
 	  if (diff<40)
@@ -397,8 +394,6 @@ function main(mode, id) {
 		  cameraHitbox.__dirtyPosition=true;
 	      }, "victory.png",5);
 	  }
-
->>>>>>> Victory
         renderer.render(scene, camera);
       }
     };

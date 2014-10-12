@@ -1,6 +1,6 @@
 // don't forget the slash at the end!
-var modelPath = '../assets/models/';
-var texturePath = '../assets/textures/';
+var modelPath = 'assets/models/';
+var texturePath = 'assets/textures/';
 
 var map = [
 	{l: 100, h:200, d:2, x: -5, y: 1, z: 20, tex: 1}
@@ -58,7 +58,7 @@ function loadSkybox(cb)
 	});
 }
 function loadMissile(cb) {
-	loadPhysicalObject('missile.js', 'missile.jpg', function (mesh) {
+	loadObject('missile.js', 'missile.jpg', function (mesh) {
 		if(cb) {
 			cb(mesh);
 		}

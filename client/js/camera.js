@@ -1,13 +1,13 @@
 //Camera initialization
 function initCamera(scene)
 {
-    var camera=new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    var camera=new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 10000);
     var cameraHitbox = new Physijs.BoxMesh(
         new THREE.CylinderGeometry(2, 2, 12),
         0,
         50 // mass
     );
-    cameraHitbox.position.set(0,57,0);
+    cameraHitbox.position.set(0,10,0);
     cameraHitbox.add(camera);
     scene.add(cameraHitbox);
     //Constraints

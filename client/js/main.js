@@ -259,7 +259,7 @@
       camera.updateMatrix();
 
       if(isOculus) {
-        camera.position.y += 100
+        camera.position.y += 100;
       }
       
       //Render function
@@ -282,10 +282,10 @@
           effect.render( scene, camera );
         } else {
           setSpeed(cameraHitbox, pressed, theta);
-          //if (character){
+          if (character){
             //character.position.x=cameraHitbox.position.x;
             //character.position.z=cameraHitbox.position.z;
-          //}
+          }
           renderer.render(scene, camera);
         }
       };

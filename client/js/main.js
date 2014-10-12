@@ -77,7 +77,11 @@ function main(mode, id) {
       mesh.position.x = 25;
       mesh.position.z=	10;
       scene.add(mesh);
-      character.char1=mesh;
+      if(id === 1) {
+        character.char1=mesh;
+      }else{
+        character.char1=mesh;
+      }
     });
     
     loadCharacter(function(mesh){
@@ -124,14 +128,19 @@ function main(mode, id) {
 
     loadMissile(function (missile) {
         missile.scale.set(10, 10, 10);
+      if(isOculus) {
+        missile.position.x = 0;
+        missile.position.y = -20;
+        missile.position.z = -25;
+        missile.quaternion.setFromEuler(new THREE.Euler(Math.PI/8, -Math.PI/2, 0, 'XYZ' ));
+        missile.quaternion.normalize();
+        camera.add(missile);
+      } else {
         missile.position.y = 200;
         missile.position.x = -726;
         missile.position.z = -1317;
         missile.quaternion.setFromEuler(new THREE.Euler(Math.PI, -Math.PI/1.5, 0, 'XYZ' ));
         missile.quaternion.normalize();
-      if(isOculus) {
-        camera.add(missile);
-      } else {
         scene.add(missile);
         characters.missile = missile; 
       }
@@ -253,7 +262,11 @@ function main(mode, id) {
     camera.updateMatrix();
 
     if(isOculus) {
-      camera.position.y += 100;
+        camera.position.y = 200;
+        camera.position.x = -726;
+        camera.position.z = -1317;
+        camera.quaternion.setFromEuler(new THREE.Euler(Math.PI, -Math.PI/1.5, 0, 'XYZ' ));
+        camera.quaternion.normalize();
     }
     
     //Render function

@@ -7,14 +7,14 @@ function initCamera(scene)
         0,
         50 // mass
     );
-    cameraHitbox.position.set(0,15,0);
+    cameraHitbox.position.set(0,20,0);
     cameraHitbox.add(camera);
     scene.add(cameraHitbox);
     //Constraints
     var constraint = new Physijs.DOFConstraint(
         cameraHitbox, // First object to be constrained
         0,
-        new THREE.Vector3(0, 15, 0) // point in the scene to apply the constraint
+        new THREE.Vector3(0, 20, 0) // point in the scene to apply the constraint
     );
     scene.addConstraint(constraint);
     constraint.setLinearLowerLimit( new THREE.Vector3( -1e30, -1e30, -1e30) ); // sets the lower end of the linear movement along the x, y, and z axes.

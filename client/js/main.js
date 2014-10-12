@@ -103,16 +103,7 @@ function main(mode, id) {
       scene.add(mesh);
       character=mesh;
     });*/
-
-    loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
-	mesh.scale.set(4,4,4);
-	mesh.position.y = 3;
-	mesh.position.x = -20;
-	mesh.position.z = -50;
-	mesh.mass=0;
-	scene.add(mesh);
-    });
- 
+      createBarrels(scene);
 
     //Base de départ
     loadPhysicalObject("flag-base.js","flag-base-green.jpg",function(mesh){
@@ -382,12 +373,12 @@ function main(mode, id) {
           //character.position.x=cameraHitbox.position.x;
             //character.position.z=cameraHitbox.position.z;
 	    //Vérifie si le joueur n'est pas mort
-	    if (cameraHitbox.position.y<7)
+	    if (cameraHitbox.position.y<0)
 	    {
 		cameraHitbox.setLinearVelocity(new THREE.Vector3(0,0,0));
 
 		gameOver(function(){
-		    cameraHitbox.position.set(5,15,0);
+		    cameraHitbox.position.set(5,20,0);
 		    cameraHitbox.__dirtyPosition=true;
 		    //camera.position.set(5,20,0);
 		    //camera.__dirtyPosition=true;

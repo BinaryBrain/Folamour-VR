@@ -2,7 +2,7 @@ function main(mode, id) {
   isOculus = mode;
   var cameraHitbox;
   var otherPlayers = {};
-  var character;
+  var characters = {};
 
   //Compatibility
   if (navigator.mozGetUserMedia) var nav = "moz";
@@ -77,7 +77,7 @@ function main(mode, id) {
       mesh.position.x = 25;
       mesh.position.z=	10;
       scene.add(mesh);
-      character=mesh;
+      character.char1=mesh;
     });
     
     loadCharacter(function(mesh){
@@ -85,16 +85,16 @@ function main(mode, id) {
       mesh.position.x = 35;
       mesh.position.z=	10;
       scene.add(mesh);
-      character=mesh;
+      character.char2=mesh;
     });
     
-    loadCharacter(function(mesh){
+    /*loadCharacter(function(mesh){
       mesh.position.y = 7.5;
       mesh.position.x = 20;
-      mesh.position.z=	10;
+      mesh.position.z =	10;
       scene.add(mesh);
       character=mesh;
-    });
+    });*/
 
     loadPhysicalObject("barrel.js","barrel.jpg",function(mesh){
       mesh.scale.set(5,5,5);
@@ -118,26 +118,22 @@ function main(mode, id) {
       mesh.scale.set(8,8,8);
       mesh.position.y = 5;
       mesh.position.x = -726;
-	mesh.position.z = -1317;
+      mesh.position.z = -1317;
       scene.add(mesh);
     });
 
     loadMissile(function (missile) {
-      if(isOculus) {
         missile.scale.set(10, 10, 10);
-        missile.position.x = 0;
-        missile.position.y = -20;
-        missile.position.z = -25;
-
-        missile.quaternion.setFromEuler(new THREE.Euler(Math.PI/8, -Math.PI/2, 0, 'XYZ' ));
+        missile.position.y = 200;
+        missile.position.x = -726;
+        missile.position.z = -1317;
+        missile.quaternion.setFromEuler(new THREE.Euler(Math.PI, -Math.PI/1.5, 0, 'XYZ' ));
         missile.quaternion.normalize();
-
-        var axis = new THREE.Vector3(1,0,0);
-
+      if(isOculus) {
         camera.add(missile);
       } else {
-        // TODO Add missile to Folamour
-        // scene.add(missile);
+        scene.add(missile);
+        characters.missile = missile; 
       }
     })
 
@@ -282,10 +278,10 @@ function main(mode, id) {
         effect.render( scene, camera );
       } else {
         setSpeed(cameraHitbox, pressed, theta);
-        if (character){
+        //if (character){
           //character.position.x=cameraHitbox.position.x;
           //character.position.z=cameraHitbox.position.z;
-        }
+        //}
         renderer.render(scene, camera);
       }
     };

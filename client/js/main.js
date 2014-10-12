@@ -264,6 +264,8 @@ function main(mode, id) {
     var render = function() {
       requestAnimationFrame(render);
       
+      // TODO draw people from other people that i != you with p and v
+      
       var send = {};
       console.log(id);
       send.pers = {id: id, p: cameraHitbox.position, v: cameraHitbox.getLinearVelocity()};
@@ -380,7 +382,6 @@ function main(mode, id) {
     otherPlayers['p'+ret.pers.id] = ret.pers;
     if (ret.p1) otherPlayers.p1 = ret.p1;
     if (ret.p2) otherPlayers.p2 = ret.p2;
-    console.log(otherPlayers);
   };
 }
 

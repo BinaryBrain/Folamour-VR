@@ -1,3 +1,4 @@
+var missile_mesh;
 function main(mode, id) {
   isOculus = mode;
   var cameraHitbox;
@@ -135,6 +136,7 @@ function main(mode, id) {
         missile.quaternion.setFromEuler(new THREE.Euler(Math.PI/8, -Math.PI/2, 0, 'XYZ' ));
         missile.quaternion.normalize();
         camera.add(missile);
+        missile_mesh = missile;
       } else {
         missile.position.y = 200;
         missile.position.x = -726;

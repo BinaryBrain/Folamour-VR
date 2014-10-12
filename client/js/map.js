@@ -49,7 +49,7 @@ function loadPhysicalObject(model, texture, cb) {
 function loadSkybox(cb)
 {
     loadObject('skybox.js', 'skybox.jpg', function (mesh) {
-	mesh.scale.set(100, 100, 100);
+	mesh.scale.set(300, 300, 300);
 	mesh.position.y = 0;
 	mesh.position.x = 0;
 	if(cb) {
